@@ -1,0 +1,8 @@
+# Supported CirrusSearch prefixes
+# The keys here must match the enum Subgraph in models/enums.py
+prefix:
+  "scientific_articles": "haswbstatement:P31=Q13442814 -haswbstatement:P921={0}"
+  "scientific_journals": "haswbstatement:P31=Q41298 -haswbstatement:P921={0}"
+  # There are many types of documents so we select based on the identifier Swedish Riksdag document ID
+  # see https://www.wikidata.org/wiki/Wikidata:WikiProject_Sweden/Swedish_Riksdag_documents
+  "riksdagen_documents": "haswbstatement:P8433 -haswbstatement:P921={0}"
