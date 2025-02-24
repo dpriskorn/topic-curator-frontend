@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import yaml from 'js-yaml';
+import { backendConfig } from '../../public/config/backend';
 
 // Utility function to retry a request
 const retryRequest = async (requestFn, retries = 5, delay = 1000) => {
@@ -61,7 +62,7 @@ const CirrusSearchFetcher = ({ qid, term, subgraph }) => {
         // Use the FastAPI proxy server with retries
         const response = await retryRequest(
           async () => {
-            return await axios.get('http://localhost:8000/v0/api/wikidata', {
+            return await axios.get(`${backendConfig.baseUrl}${backendConfig.apiPath}`, {
               params: {
                 srsearch: searchString, // Pass the search string to the proxy
               },
