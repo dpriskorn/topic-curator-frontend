@@ -42,7 +42,7 @@ const CirrusSearchFetcher = ({ qid, term, subgraph }) => {
         // Use the FastAPI proxy server with retries
         const response = await retryRequest(
           async () => {
-            return await axios.get(`${backendConfig.baseUrl}${backendConfig.apiPath}`, {
+            return await axios.get(`${backendConfig.baseUrl}${backendConfig.cirrusSearch}`, {
               params: {
                 srsearch: searchString, // Pass the search string to the proxy
               },
