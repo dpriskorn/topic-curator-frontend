@@ -1,58 +1,38 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
-import yaml from 'js-yaml';
 import { backendConfig } from '../../public/config/backend';
+import { prefixConfig } from '../../public/config/prefix';
 
 // Utility function to retry a request
 const retryRequest = async (requestFn, retries = 5, delay = 1000) => {
-    for (let attempt = 1; attempt <= retries; attempt++) {
-      try {
-        const response = await requestFn();
-  
-        // Validate the response structure
-        if (!response.data || !response.data.query || !response.data.query.searchinfo) {
-            // Log the full response for debugging
-            console.log('Response:', response);
-            throw new Error('Invalid response structure from Wikidata API');
-        }
-  
-        return response; // Return the response if successful and valid
-      } catch (err) {
-        if (attempt === retries) {
-          throw err; // Throw the error if all retries fail
-        }
-        await new Promise((resolve) => setTimeout(resolve, delay * attempt)); // Wait before retrying
+  for (let attempt = 1; attempt <= retries; attempt++) {
+    try {
+      const response = await requestFn();
+
+      // Validate the response structure
+      if (!response.data || !response.data.query || !response.data.query.searchinfo) {
+        // Log the full response for debugging
+        console.log('Response:', response);
+        throw new Error('Invalid response structure from Wikidata API');
       }
+
+      return response; // Return the response if successful and valid
+    } catch (err) {
+      if (attempt === retries) {
+        throw err; // Throw the error if all retries fail
+      }
+      await new Promise((resolve) => setTimeout(resolve, delay * attempt)); // Wait before retrying
     }
-  };
+  }
+};
 
 const CirrusSearchFetcher = ({ qid, term, subgraph }) => {
   const [totalHits, setTotalHits] = useState<number | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const [prefixConfig, setPrefixConfig] = useState<Record<string, string> | null>(null);
 
-  // Load the prefix configuration from the YAML file
+  // Fetch CirrusSearch matches
   useEffect(() => {
-    const loadPrefixConfig = async () => {
-      try {
-        const response = await fetch('/config/prefix.yml'); // Path to the YAML file in the public folder
-        const text = await response.text();
-        const config = yaml.load(text);
-        setPrefixConfig(config.prefix); // Set the prefix configuration
-      } catch (err) {
-        console.error('Failed to load prefix config:', err);
-        setError('Failed to load prefix configuration');
-      }
-    };
-
-    loadPrefixConfig();
-  }, []);
-
-  // Fetch CirrusSearch matches once the prefix config is loaded
-  useEffect(() => {
-    if (!prefixConfig) return; // Wait until prefixConfig is loaded
-
     const fetchCirrusSearchMatches = async () => {
       try {
         // Build the prefix based on the subgraph and qid
@@ -84,7 +64,7 @@ const CirrusSearchFetcher = ({ qid, term, subgraph }) => {
     };
 
     fetchCirrusSearchMatches();
-  }, [qid, term, subgraph, prefixConfig]);
+  }, [qid, term, subgraph]);
 
   if (loading) {
     return <span>Loading...</span>;
