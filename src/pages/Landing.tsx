@@ -52,7 +52,7 @@ const LandingPage = () => {
     setLoading(true);
     try {
       const response = await fetch(
-        `http://0.0.0.0:8000/subtopics?lang=${formData.lang}&qid=${formData.qid}&subgraph=${formData.subgraph}`
+        `http://0.0.0.0:8000/v0/subtopics?lang=${formData.lang}&qid=${formData.qid}&subgraph=${formData.subgraph}`
       );
       const data = await response.json();
       setSubtopics(data.subtopics || []);
