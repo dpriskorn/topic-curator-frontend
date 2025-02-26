@@ -1,16 +1,40 @@
-import React, { useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import CirrusSearchFetcher from '../components/CirrusSearchFetcher';
 
+
 const Subtopics = () => {
-    const location = useLocation();
+    const [searchParams] = useSearchParams();
     const navigate = useNavigate();
-    
+    const location = useLocation();
+
+    // Extract query parameters
+    const qidParam = searchParams.get('qid');
+    const langParam = searchParams.get('lang') || 'en';
+    const subgraphParam = searchParams.get('subgraph') || 'scientific_articles';
+
+    // Redirect to root if qid is missing
+    useEffect(() => {
+        if (!qidParam) {
+            navigate('/');
+        }
+    }, [qidParam, navigate]);
+
+    // State variables for query parameters
+    const [qid, setQid] = useState(qidParam || '');
+    const [lang, setLang] = useState(langParam);
+    const [subgraph, setSubgraph] = useState(subgraphParam);
+
+    // Update state when query params change
+    useEffect(() => {
+        if (qidParam) setQid(qidParam);
+        setLang(langParam);
+        setSubgraph(subgraphParam);
+    }, [qidParam, langParam, subgraphParam]);
+
     // Provide default values for location.state
-    const { subtopics = [], qid = '', subgraph = 'scientific_articles' } = location.state || {};
-    const [checkedRows, setCheckedRows] = useState<boolean[]>(
-        new Array(subtopics.length).fill(false)
-    );
+    const { subtopics = []} = location.state || {};
+    const [checkedRows, setCheckedRows] = useState<boolean[]>(new Array(subtopics.length).fill(false));
 
     // Handle individual checkbox change
     const handleCheckboxChange = (index: number) => {
