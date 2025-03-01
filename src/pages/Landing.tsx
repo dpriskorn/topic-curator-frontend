@@ -35,36 +35,24 @@ const LandingPage = () => {
     return qidPattern.test(qid);
   };
 
-  const handleNext = async (e: React.FormEvent) => {
+  const handleNext = (e: React.FormEvent) => {
     e.preventDefault();
-
+  
     // Validate qid
     if (formData.qid.trim() === '') {
       setError('A QID is required to proceed.');
       return;
     }
-
+  
     if (!validateQid(formData.qid)) {
       setError('QID must start with a capital "Q" followed by numbers (e.g., Q123).');
       return;
     }
-
-    setLoading(true);
-    try {
-      const response = await fetch(
-        `http://0.0.0.0:8000/v0/subtopics?lang=${formData.lang}&qid=${formData.qid}&subgraph=${formData.subgraph}`
-      );
-      const data = await response.json();
-      setSubtopics(data.subtopics || []);
-
-      // Navigate to the Subtopics page with state
-      navigate('/subtopics', { state: { subtopics: data.subtopics, qid: formData.qid } });
-    } catch (error) {
-      console.error('Error fetching subtopics:', error);
-    }
-    setLoading(false);
+  
+    // Navigate to the Subtopics page with qid as a query param
+    navigate(`/subtopics?qid=${encodeURIComponent(formData.qid)}`, { state: { qid: formData.qid } });
   };
-
+  
   return (
     <main className="container mb-3">
       <div className="row justify-content-center">
