@@ -8,6 +8,7 @@ const Subtopics = () => {
 
     // Extract query parameters
     const qid = searchParams.get('qid');
+    const label = searchParams.get('label');
     const lang = searchParams.get('lang') || 'en';
     const subgraph = searchParams.get('subgraph') || 'scientific_articles';
 
@@ -38,7 +39,7 @@ const Subtopics = () => {
 
                 // Redirect to /terms if no subtopics were found
                 if (fetchedSubtopics.length === 0) {
-                    let redirectUrl = `/terms?qid=${encodeURIComponent(qid)}`;
+                    let redirectUrl = `/terms?qid=${encodeURIComponent(qid)}&label=${encodeURIComponent(label)}`;
                     if (lang !== 'en') redirectUrl += `&lang=${encodeURIComponent(lang)}`;
                     if (subgraph !== 'scientific_articles') redirectUrl += `&subgraph=${encodeURIComponent(subgraph)}`;
 
@@ -71,10 +72,11 @@ const Subtopics = () => {
     const generateUrl = (qid: string) => `https://www.wikidata.org/wiki/${qid}`;
 
     // Generate a link to the subtopics page with parameters
-    const generateSubtopicLink = (subtopicQid: string) => {
+    const generateSubtopicLink = (subtopicQid: string, label: string) => {
         let url = `/subtopics?qid=${encodeURIComponent(subtopicQid)}`;
         if (lang !== 'en') url += `&lang=${encodeURIComponent(lang)}`;
         if (subgraph !== 'scientific_articles') url += `&subgraph=${encodeURIComponent(subgraph)}`;
+        if (label) url += `&label=${encodeURIComponent(label)}`;
         return url;
     };
 
@@ -118,7 +120,7 @@ const Subtopics = () => {
                                     <input type="checkbox" checked={checkedRows[index]} onChange={() => handleCheckboxChange(index)} />
                                 </td>
                                 <td>
-                                    <a target="_blank" href={generateSubtopicLink(subtopic.qid)}>
+                                    <a target="_blank" href={generateSubtopicLink(subtopic.qid, subtopic.label)}>
                                         Match
                                     </a>
                                 </td>

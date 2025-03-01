@@ -1,18 +1,18 @@
 import { useState, useEffect } from "react";
-import { useLocation } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 import { Term } from "../models/Term";
 import { TermSource } from "../enums/TermSource";
 import { Item } from "../models/Item";
-import { Terms } from "../models/Terms"; // Import new class
+import { Terms } from "../models/Terms"; 
 
-const TermsComponent = ({ lang, subgraph, default_limit }) => {
-  const location = useLocation();
-  const { subtopic } = location.state || {};
-  const qid = subtopic?.qid || "N/A";
-  const label = subtopic?.label || "N/A";
+const TermsComponent = ({ default_limit }) => {
+  const [searchParams] = useSearchParams();
+  const qid = searchParams.get("qid") || "N/A";
+  const lang = searchParams.get("lang") || "en";
+  const subgraph = searchParams.get("subgraph") || "default";
+  const label = searchParams.get("label") || "N/A";
 
-  // Initialize Terms manager
-  const [termsManager] = useState(new Terms(label)); // ✅ Encapsulated term management
+  const [termsManager] = useState(new Terms(label));
   const [newTerm, setNewTerm] = useState("");
   const [showError, setShowError] = useState(false);
   const [fetchError, setFetchError] = useState(null);
@@ -24,17 +24,13 @@ const TermsComponent = ({ lang, subgraph, default_limit }) => {
       try {
         const item = new Item(qid, lang);
         const fetchedAliases = await item.fetchAliases();
-        console.debug("Fetched Aliases from API:", fetchedAliases); // ✅ Debug: Ensure aliases are fetched
+        console.debug("Fetched Aliases from API:", fetchedAliases);
 
-        // Add fetched aliases to termsManager with deduplication
         const processedAliases = fetchedAliases.map(alias => alias.preparedTerm());
+        console.debug("Processed Aliases:", processedAliases);
 
-        console.debug("Processed Aliases (after preparedTerm):", processedAliases); // ✅ Debug: Ensure preparation works
-
-        // Add processed aliases to the Terms manager
         termsManager.addTerms(processedAliases);
-        console.debug("Terms after adding aliases:", termsManager.getTerms()); // ✅ Debug: Ensure termsManager has the aliases
-
+        console.debug("Terms after adding aliases:", termsManager.getTerms());
       } catch (error) {
         setFetchError(error.message);
       }
@@ -46,7 +42,7 @@ const TermsComponent = ({ lang, subgraph, default_limit }) => {
   const addTerm = () => {
     if (newTerm.trim() !== "") {
       const termObj = new Term(newTerm, TermSource.USER);
-      termsManager.addTerm(termObj); // ✅ Use Terms manager to add new term
+      termsManager.addTerm(termObj);
       setNewTerm("");
       setShowError(false);
     }
@@ -58,6 +54,8 @@ const TermsComponent = ({ lang, subgraph, default_limit }) => {
         <h3>Subtopic Details</h3>
         <p><strong>QID:</strong> {qid}</p>
         <p><strong>Label:</strong> {label}</p>
+        <p><strong>Language:</strong> {lang}</p>
+        <p><strong>Subgraph:</strong> {subgraph}</p>
       </div>
 
       {fetchError && <p className="alert alert-danger">Error: {fetchError}</p>}
@@ -67,6 +65,7 @@ const TermsComponent = ({ lang, subgraph, default_limit }) => {
           <input type="hidden" name="lang" value={lang} />
           <input type="hidden" name="subgraph" value={subgraph} />
           <input type="hidden" name="qid" value={qid} />
+          <input type="hidden" name="label" value={label} />
 
           <h3>Term list</h3>
           {showError && <p className="alert alert-danger">At least one term is required.</p>}
