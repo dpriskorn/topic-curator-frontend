@@ -3,42 +3,49 @@ import { useSearchParams } from "react-router-dom";
 import { Term } from "../models/Term";
 import { TermSource } from "../enums/TermSource";
 import { Item } from "../models/Item";
-import { Terms } from "../models/Terms"; 
+import { Terms } from "../models/Terms";
 
 const TermsComponent = ({ default_limit }) => {
   const [searchParams] = useSearchParams();
   const qid = searchParams.get("qid") || "N/A";
   const lang = searchParams.get("lang") || "en";
   const subgraph = searchParams.get("subgraph") || "default";
-  const label = searchParams.get("label") || "N/A";
+  const label = searchParams.get("label") || "";
 
-  const [termsManager] = useState(new Terms(label));
+  // Initialize Terms with an array of Term objects (fix potential string issue)
+  const initialTerms = label ? [new Term(String(label), TermSource.USER)] : [];
+  const [termsManager] = useState(new Terms(initialTerms));
+
   const [newTerm, setNewTerm] = useState("");
   const [showError, setShowError] = useState(false);
   const [fetchError, setFetchError] = useState(null);
 
   useEffect(() => {
     if (qid === "N/A") return;
-
+  
     const fetchAliases = async () => {
       try {
         const item = new Item(qid, lang);
-        const fetchedAliases = await item.fetchAliases();
+        const fetchedAliases = await item.fetchAliasTerms(); // FIX: Correct method name
         console.debug("Fetched Aliases from API:", fetchedAliases);
-
-        const processedAliases = fetchedAliases.map(alias => alias.preparedTerm());
-        console.debug("Processed Aliases:", processedAliases);
-
-        termsManager.addTerms(processedAliases);
+  
+        // Ensure aliases are valid Term objects before adding them
+        if (!Array.isArray(fetchedAliases) || fetchedAliases.some(alias => !(alias instanceof Term))) {
+          console.error("Invalid alias data format:", fetchedAliases);
+          setFetchError("Fetched aliases contain invalid data.");
+          return;
+        }
+  
+        termsManager.addTerms(fetchedAliases);
         console.debug("Terms after adding aliases:", termsManager.getTerms());
       } catch (error) {
         setFetchError(error.message);
       }
     };
-
+  
     fetchAliases();
   }, [qid, lang]);
-
+  
   const addTerm = () => {
     if (newTerm.trim() !== "") {
       const termObj = new Term(newTerm, TermSource.USER);
@@ -83,7 +90,7 @@ const TermsComponent = ({ default_limit }) => {
                 {termsManager.getTerms().map((term, index) => (
                   <tr key={index}>
                     <td>
-                      <input type="checkbox" name="terms" checked={true} readOnly />
+                      <input type="checkbox" name="terms" value={term.string} defaultChecked />
                     </td>
                     <td>{term.string}</td>
                     <td><span className="source">{term.source}</span></td>
@@ -98,8 +105,11 @@ const TermsComponent = ({ default_limit }) => {
               value={newTerm}
               onChange={(e) => setNewTerm(e.target.value)}
             />
-            <button type="button" onClick={addTerm} className="btn btn-secondary btn-sm">
+            <button type="button" onClick={addTerm} className="btn btn-secondary btn-sm me-2">
               Add term
+            </button>
+            <button type="submit" className="btn btn-primary btn-sm">
+              Fetch matches
             </button>
           </div>
         </form>

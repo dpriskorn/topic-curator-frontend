@@ -1,4 +1,4 @@
-import { CirrusSearch } from "./Cirrussearch";
+import { CirrusSearch } from "./CirrusSearch";
 import { Subgraph } from "../enums/Subgraph";
 import { Term } from "./Term";
 import { Terms } from "./Terms";
@@ -32,12 +32,14 @@ export class TopicParameters {
         if (!term) {
             throw new Error("no term");
         }
-        return new CirrusSearch(
+        const searchInstance = new CirrusSearch(
             this.topic,
             term,
+            this.subgraph,  // Correct position
             this.userPrefix,
-            this.affix,
-            this.subgraph
+            this.affix
         );
+        console.debug("Constructed CirrusSearch instance:", searchInstance);
+        return searchInstance;
     }
 }

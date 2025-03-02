@@ -15,7 +15,8 @@ const Subtopics = () => {
     // Redirect to root if qid is missing
     useEffect(() => {
         if (!qid) {
-            navigate('/');
+            setError("Missing required parameters");
+            return;
         }
     }, [qid, navigate]);
 

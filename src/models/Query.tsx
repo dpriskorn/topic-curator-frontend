@@ -2,9 +2,9 @@ import { WIKIDATA_SPARQL_ENDPOINT } from "../../public/config/sparql";
 import USER_AGENT from "../../public/config/userAgent";
 import apiClient from "../components/apiClient";
 import { SparqlResponse } from "../types/sparql";
-import { CirrusSearch } from "./Cirrussearch";
+import { CirrusSearch } from "./CirrusSearch";
 import { GoogleScholarSearch } from "./GoogleScholarSearch";
-import SparqlItem from "./SparqlItem";
+import { SparqlItem } from "./SparqlItem";
 import { Term } from "./Term";
 import { TopicParameters } from "./TopicParameters";
 import { flatten } from "flat";
@@ -24,9 +24,11 @@ export class Query {
     }
 
     get cirrussearch(): CirrusSearch {
-        return this.parameters.getCirrusSearch(this.term);
+        const searchInstance = this.parameters.getCirrusSearch(this.term);
+        console.debug(`CirrusSearch URL: ${searchInstance.url}`);
+        return searchInstance;
     }
-
+    
     get calculatedLimit(): number {
         return this.parameters.limit - this.itemCount;
     }
@@ -51,7 +53,12 @@ export class Query {
     private async runAndParseResults(): Promise<SparqlItem[]> {
         const items: SparqlItem[] = [];
         const results = await this.execute();
-
+    
+        if (!results || !results["results"] || !results["results"]["bindings"]) {
+            console.warn("No results returned or results are undefined.");
+            return items; // Return an empty array if results are undefined
+        }
+    
         for (const itemJson of results["results"]["bindings"]) {
             const flattenedItem = flatten(itemJson) as {
                 item_value?: string;
@@ -74,7 +81,7 @@ export class Query {
         }
         return items;
     }
-
+    
     async runAndGetItems(): Promise<SparqlItem[]> {
         this.hasBeenRun = true;
         return await this.runAndParseResults();

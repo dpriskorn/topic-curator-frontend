@@ -1,6 +1,6 @@
 import { Term } from "./Term";
 
-export class GoogleScholarSearch {
+class GoogleScholarSearch {
     term: Term;
   
     constructor(term: Term) {
@@ -16,4 +16,4 @@ export class GoogleScholarSearch {
       return `https://scholar.google.com/scholar?hl=${lang}&q=%22${this.term.plusFormatted}%22`;
     }
   }
-  
+export { GoogleScholarSearch };

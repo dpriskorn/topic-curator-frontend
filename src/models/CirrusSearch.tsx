@@ -76,6 +76,17 @@ export class CirrusSearch {
     }
 
     get cirrussearchUrl(): string {
-        return `https://www.wikidata.org/w/index.php?search=${encodeURIComponent(this.cirrussearchString)}&title=Special%3ASearch&profile=advanced&fulltext=1&ns0=1`;
+        console.debug("Accessing cirrussearchUrl getter...");
+        const searchString = this.cirrussearchString;
+        console.debug("CirrusSearch String:", searchString);
+    
+        if (!searchString) {
+            console.error("cirrussearchString is undefined or empty!");
+            return "";
+        }
+    
+        const url = `https://www.wikidata.org/w/index.php?search=${encodeURIComponent(searchString)}&title=Special%3ASearch&profile=advanced&fulltext=1&ns0=1`;
+        console.debug("Generated CirrusSearch URL:", url);
+        return url;
     }
 }

@@ -14,7 +14,7 @@ class Item {
   /**
    * Fetches aliases for the given QID and returns them as Term instances.
    */
-  async fetchAliases(): Promise<Term[]> {
+  async fetchAliasTerms(): Promise<Term[]> {
     try {
       const aliasesUrl = `/entities/items/${this.qid}/aliases`;
       const response = await apiClient.get(aliasesUrl);

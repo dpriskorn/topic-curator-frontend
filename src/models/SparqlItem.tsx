@@ -1,7 +1,7 @@
 import { Item } from "./Item";
 import { Term } from "./Term";
 
-export default class SparqlItem extends Item {
+class SparqlItem extends Item {
     // qid is inherited
     itemLabel: string;
     instanceOfLabel: string;
@@ -40,8 +40,9 @@ export default class SparqlItem extends Item {
 
     get highlightedItemLabel(): string {
         if (this.itemLabel !== "No label found") {
-            const highlightList = [this.term.string];
-            const highlightStr = new RegExp(`\b(?:${highlightList.join('|')})\b`, 'gi');
+            // Escape special characters in term.string to avoid regex errors
+            const escapedTerm = this.term.string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            const highlightStr = new RegExp(`\\b${escapedTerm}\\b`, 'gi');
             
             return this.itemLabel.replace(highlightStr, (match) => `<mark>${match}</mark>`);
         } else {
@@ -49,3 +50,4 @@ export default class SparqlItem extends Item {
         }
     }
 }
+export { SparqlItem };
