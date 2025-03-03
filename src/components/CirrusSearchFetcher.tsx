@@ -27,6 +27,7 @@ const retryRequest = async (requestFn, retries = 5, delay = 1000) => {
 };
 
 const CirrusSearchFetcher = ({ qid, term, subgraph }) => {
+  /* Fetcher that use the FastAPI backend because of CORS errors */
   const [totalHits, setTotalHits] = useState<number | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
