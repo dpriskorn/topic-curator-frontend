@@ -1,8 +1,8 @@
 import React from "react";
-import { Item } from "../models/Item";
+import { SparqlItem } from "../models/SparqlItem";
 
 interface ResultsTableProps {
-  results: Item[];
+  results: SparqlItem[];
 }
 
 const ResultsTable: React.FC<ResultsTableProps> = ({ results }) => {
@@ -16,7 +16,6 @@ const ResultsTable: React.FC<ResultsTableProps> = ({ results }) => {
         <tr>
           <th>#</th>
           <th>Select</th>
-          <th>QID</th>
           <th>Label</th>
           <th>Instance Of</th>
           <th>Publication</th>
@@ -29,14 +28,15 @@ const ResultsTable: React.FC<ResultsTableProps> = ({ results }) => {
             <td>{index + 1}</td>
             <td><input type="checkbox" /></td>
             <td>
-              <a href={`https://www.wikidata.org/wiki/${item.qid}`} target="_blank" rel="noopener noreferrer">
-                {item.qid}
+              <a href={item.qidUrl} target="_blank" rel="noopener noreferrer">
+                {item.itemLabel}
               </a>
             </td>
-            <td>{item.itemLabel}</td>
             <td>{item.instanceOfLabel}</td>
             <td>{item.publicationLabel}</td>
-            <td>{item.doi || "N/A"}</td>
+            <td>
+              {item.doi ? <a href={item.doiUrl} target="_blank" rel="noopener noreferrer">{item.doi}</a> : "N/A"}
+            </td>
           </tr>
         ))}
       </tbody>
