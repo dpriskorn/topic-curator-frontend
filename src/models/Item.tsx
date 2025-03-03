@@ -7,6 +7,14 @@ class Item {
   private lang: string;
 
   constructor(qid: string, lang: string = "en") {
+    // Remove "http://www.wikidata.org/entity/" if present
+    qid = qid.replace(/^http:\/\/www\.wikidata\.org\/entity\//, "");
+
+    // Validate the qid format
+    if (!/^Q\d+$/.test(qid)) {
+      throw new Error(`Invalid qid: ${qid}. Expected format: "Q1234".`);
+    }
+
     this.qid = qid;
     this.lang = lang;
   }
@@ -32,6 +40,23 @@ class Item {
       }
     } catch (error) {
       throw new Error(`Failed to fetch aliases: ${error}`);
+    }
+  }
+  /**
+   * Fetches the description for the given QID in the specified language.
+   */
+  async fetchDescription(): Promise<string> {
+    try {
+      const descriptionUrl = `/entities/items/${this.qid}/descriptions`;
+      const response = await apiClient.get(descriptionUrl);
+
+      if (response.status === 200) {
+        return response.data[this.lang] || "No description yet, please improve";
+      } else {
+        throw new Error(`Description fetch error: ${response.status}`);
+      }
+    } catch (error) {
+      throw new Error(`Description fetch error: ${error}`);
     }
   }
 }
