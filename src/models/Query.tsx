@@ -24,19 +24,22 @@ export class Query {
     }
 
     get cirrussearch(): CirrusSearch {
+        // This is a convenience method
         const searchInstance = this.parameters.getCirrusSearch(this.term);
-        console.debug(`CirrusSearch URL: ${searchInstance.url}`);
+        // console.debug(`CirrusSearch URL: ${searchInstance.url}`);
         return searchInstance;
     }
-    
+
     get calculatedLimit(): number {
         return this.parameters.limit - this.itemCount;
     }
 
     private async execute(): Promise<SparqlResponse> {
+        console.debug("execute: running");
         if (!this.wdqsQueryString) {
             throw new Error("no query string");
         }
+        console.debug("wdqsQueryString:", this.wdqsQueryString);
 
         try {
             const response = await apiClient.get(WIKIDATA_SPARQL_ENDPOINT, {
@@ -51,6 +54,7 @@ export class Query {
     }
 
     private async runAndParseResults(): Promise<SparqlItem[]> {
+        console.debug("runAndParseResults: running");
         const items: SparqlItem[] = [];
         const results = await this.execute();
     
@@ -83,6 +87,7 @@ export class Query {
     }
     
     async runAndGetItems(): Promise<SparqlItem[]> {
+        console.debug("runAndGetItems: running");
         this.hasBeenRun = true;
         return await this.runAndParseResults();
     }
@@ -101,6 +106,7 @@ export class Query {
     }
 
     get wdqsQueryString(): string {
+        console.debug("wdqsQueryString: running");
         console.debug(`using cirrussearch_string: '${this.cirrussearch.escapedCirrussearchString}'`);
         // we include the user agent to help the sysops know where the queries come from
         return `
