@@ -7,6 +7,8 @@ import { TopicParameters } from "../models/TopicParameters";
 import { Item } from "../models/Item";
 import { Terms } from "../models/Terms";
 import { Subgraph } from "../enums/Subgraph";
+import ResultsTable from "../components/ResultsTable";
+import QueryTable from "../components/QueryTable";
 
 const Results = () => {
   const [searchParams] = useSearchParams();
@@ -15,7 +17,8 @@ const Results = () => {
   const subgraph = searchParams.get("subgraph") || "scientific_articles";
   const terms = useMemo(() => searchParams.getAll("terms"), [searchParams]); // Memoized
 
-  const [results, setResults] = useState([]);
+  const [queries, setQueries] = useState<Query[]>([]);
+  const [results, setResults] = useState<Item[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -43,7 +46,8 @@ const Results = () => {
           : Subgraph.SCIENTIFIC_ARTICLES;
 
         const topicParameters = new TopicParameters(topicItem, 10, termsObject, subgraphInstance);
-        let allResults = [];
+        let allQueries: Query[] = [];
+        let allResults: Item[] = [];
 
         console.log(`Executing ${terms.length} queries...`);
 
@@ -51,10 +55,13 @@ const Results = () => {
           const term = new Term(termString, TermSource.USER);
           const query = new Query(lang, term, topicParameters);
           const queryResults = await query.runAndGetItems();
+
+          allQueries.push(query);
           allResults = [...allResults, ...queryResults];
         }
 
         console.log("Total results fetched:", allResults.length);
+        setQueries(allQueries);
         setResults(allResults);
       } catch (err) {
         console.error("Error fetching results:", err);
@@ -69,47 +76,18 @@ const Results = () => {
 
   return (
     <main className="container mt-3">
-      <h2>Query Results</h2>
+      <h2>CirrusSearch queries</h2>
+      <p>
+          Language code: {lang} | Subgraph: {subgraph}
+      </p>
 
       {loading && <p className="alert alert-info">Fetching results...</p>}
       {error && <p className="alert alert-danger">Error: {error}</p>}
 
-      {!loading && !error && results.length === 0 && (
-        <p className="alert alert-warning">No results found.</p>
-      )}
-
-      {!loading && results.length > 0 && (
-        <table className="table table-bordered">
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>Select</th>
-              <th>QID</th>
-              <th>Label</th>
-              <th>Instance Of</th>
-              <th>Publication</th>
-              <th>DOI</th>
-            </tr>
-          </thead>
-          <tbody>
-            {results.map((item, index) => (
-              <tr key={index}>
-                <td>{index + 1}</td>
-                <td><input type="checkbox" /></td>
-                <td>
-                  <a href={`https://www.wikidata.org/wiki/${item.qid}`} target="_blank" rel="noopener noreferrer">
-                    {item.qid}
-                  </a>
-                </td>
-                <td>{item.itemLabel}</td>
-                <td>{item.instanceOfLabel}</td>
-                <td>{item.publicationLabel}</td>
-                <td>{item.doi || "N/A"}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      )}
+      {!loading && !error && queries.length > 0 && <QueryTable queries={queries} />}
+      
+      <h2>Results</h2>
+      {!loading && !error && results.length > 0 && <ResultsTable results={results} />}
     </main>
   );
 };
