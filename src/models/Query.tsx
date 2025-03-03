@@ -13,7 +13,6 @@ export class Query {
     term: Term;
     parameters: TopicParameters;
     items: SparqlItem[] = [];
-    itemCount: number = 0;
     hasBeenRun: boolean = false;
 
     constructor(lang: string, term: Term, parameters: TopicParameters) {
@@ -22,6 +21,10 @@ export class Query {
         this.parameters = parameters;
     }
 
+    get itemCount(): number {
+        return this.items.length;
+    }
+    
     get cirrussearch(): CirrusSearch {
         return this.parameters.getCirrusSearch(this.term);
     }
@@ -87,7 +90,7 @@ export class Query {
             for (let i = 1; i < levels; i++) {
                 path += `/${subpath}`;
             }
-            lines.push(`\t\tMINUS {?item ${path} wd:${this.parameters.topic.qid}. }`);
+            lines.push(`\t\tMINUS {?item ${path} wd:${this.qid}. }`);
         }
         return lines.join("\n");
     }
@@ -128,5 +131,16 @@ export class Query {
 
     get getEverywhereGoogleUrl(): string {
         return new GoogleScholarSearch(this.term).everywhereUrl();
+    }
+
+    /* Helper method */
+    get wdqsUrl(): string {
+        const encodedQuery = encodeURIComponent(this.wdqsQueryString);
+        return `https://query.wikidata.org/#${encodedQuery}`;
+    }
+
+    /* Helper method */
+    get qid(): string {
+        return this.parameters.topic.qid;
     }
 }
