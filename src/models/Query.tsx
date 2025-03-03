@@ -4,6 +4,7 @@ import apiClient from "../components/apiClient";
 import { SparqlResponse } from "../types/sparql";
 import { CirrusSearch } from "./CirrusSearch";
 import { GoogleScholarSearch } from "./GoogleScholarSearch";
+import { Item } from "./Item";
 import { SparqlItem } from "./SparqlItem";
 import { Term } from "./Term";
 import { TopicParameters } from "./TopicParameters";
@@ -20,6 +21,11 @@ export class Query {
         this.term = term;
         this.parameters = parameters;
     }
+
+    /* Helper method */
+    // get topic(): Item {
+    //     return this.parameters.topic;
+    // }
 
     get itemCount(): number {
         return this.items.length;
@@ -51,14 +57,13 @@ export class Query {
         }
     }
 
-    private async runAndParseResults(): Promise<SparqlItem[]> {
+    private async runAndParseResults(): Promise<undefined> {
         console.debug("runAndParseResults: running");
         const items: SparqlItem[] = [];
         const results = await this.execute();
     
         if (!results || !results.results || !results.results.bindings) {
             console.warn("No results returned or results are undefined.");
-            return items;
         }
     
         for (const itemJson of results.results.bindings) {
@@ -73,13 +78,13 @@ export class Query {
             });
             items.push(item);
         }
-        return items;
+        this.items = items;
     }
     
-    async runAndGetItems(): Promise<SparqlItem[]> {
+    async runAndGetItems(): Promise<undefined> {
         console.debug("runAndGetItems: running");
+        await this.runAndParseResults();
         this.hasBeenRun = true;
-        return await this.runAndParseResults();
     }
 
     get generate279MinusLines(): string {
