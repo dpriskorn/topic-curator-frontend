@@ -10,7 +10,12 @@ class Item {
     this.qid = qid;
     this.lang = lang;
   }
-
+  /**
+   * Returns the Wikidata URL for the item's QID.
+   */
+  get qidUrl(): string {
+    return `https://www.wikidata.org/wiki/${this.qid}`;
+  }
   /**
    * Fetches aliases for the given QID and returns them as Term instances.
    */
