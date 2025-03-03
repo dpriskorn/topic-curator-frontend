@@ -9,6 +9,8 @@ import { Terms } from "../models/Terms";
 import { Subgraph } from "../enums/Subgraph";
 import ResultsTable from "../components/ResultsTable";
 import QueryTable from "../components/QueryTable";
+import { SparqlItem } from "../models/SparqlItem";
+import ItemDetails from "../components/ItemDetails";
 
 const Results = () => {
   const [searchParams] = useSearchParams();
@@ -18,7 +20,7 @@ const Results = () => {
   const terms = useMemo(() => searchParams.getAll("terms"), [searchParams]); // Memoized
 
   const [queries, setQueries] = useState<Query[]>([]);
-  const [results, setResults] = useState<Item[]>([]);
+  const [results, setResults] = useState<SparqlItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -46,18 +48,22 @@ const Results = () => {
           : Subgraph.SCIENTIFIC_ARTICLES;
 
         const topicParameters = new TopicParameters(topicItem, 10, termsObject, subgraphInstance);
-        let allQueries: Query[] = [];
-        let allResults: Item[] = [];
+        const allQueries: Query[] = [];
+        let allResults: SparqlItem[] = [];
 
         console.log(`Executing ${terms.length} queries...`);
 
         for (const termString of terms) {
           const term = new Term(termString, TermSource.USER);
           const query = new Query(lang, term, topicParameters);
-          const queryResults = await query.runAndGetItems();
+          await query.runAndGetItems();
+          
+          console.debug("query has been run: ", query.hasBeenRun);
+          console.debug("query itemCount: ", query.itemCount);
 
           allQueries.push(query);
-          allResults = [...allResults, ...queryResults];
+          // TODO prevent duplicates
+          allResults = [...allResults, ...query.items];
         }
 
         console.log("Total results fetched:", allResults.length);
@@ -76,6 +82,8 @@ const Results = () => {
 
   return (
     <main className="container mt-3">
+      <h1>Working on: {terms[0]}</h1>
+      {qid && <ItemDetails item={new Item(qid, lang)} />}
       <h2>CirrusSearch queries</h2>
       <p>
           Language code: {lang} | Subgraph: {subgraph}
