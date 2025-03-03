@@ -7,7 +7,6 @@ import { GoogleScholarSearch } from "./GoogleScholarSearch";
 import { SparqlItem } from "./SparqlItem";
 import { Term } from "./Term";
 import { TopicParameters } from "./TopicParameters";
-import { flatten } from "flat";
 
 export class Query {
     lang: string;
@@ -24,10 +23,7 @@ export class Query {
     }
 
     get cirrussearch(): CirrusSearch {
-        // This is a convenience method
-        const searchInstance = this.parameters.getCirrusSearch(this.term);
-        // console.debug(`CirrusSearch URL: ${searchInstance.url}`);
-        return searchInstance;
+        return this.parameters.getCirrusSearch(this.term);
     }
 
     get calculatedLimit(): number {
@@ -45,7 +41,6 @@ export class Query {
             const response = await apiClient.get(WIKIDATA_SPARQL_ENDPOINT, {
                 params: { query: this.wdqsQueryString, format: "json" },
             });
-
             return response.data;
         } catch (error) {
             console.error("SPARQL query failed:", error);
@@ -58,27 +53,19 @@ export class Query {
         const items: SparqlItem[] = [];
         const results = await this.execute();
     
-        if (!results || !results["results"] || !results["results"]["bindings"]) {
+        if (!results || !results.results || !results.results.bindings) {
             console.warn("No results returned or results are undefined.");
-            return items; // Return an empty array if results are undefined
+            return items;
         }
     
-        for (const itemJson of results["results"]["bindings"]) {
-            const flattenedItem = flatten(itemJson) as {
-                item_value?: string;
-                itemLabel_value?: string;
-                instance_ofLabel_value?: string;
-                publicationLabel_value?: string;
-                doi_id_value?: string;
-                full_resources_value?: string;
-            };
+        for (const itemJson of results.results.bindings) {
             const item = new SparqlItem({
-                qid: flattenedItem["item_value"] || "",
-                itemLabel: flattenedItem["itemLabel_value"] || "No label found",
-                instanceOfLabel: flattenedItem["instance_ofLabel_value"] || "No label found",
-                publicationLabel: flattenedItem["publicationLabel_value"] || "No label found",
-                doi: flattenedItem["doi_id_value"] || "",
-                rawFullResources: flattenedItem["full_resources_value"] || "",
+                qid: itemJson.item?.value || "",
+                itemLabel: itemJson.itemLabel?.value || "No label found",
+                instanceOfLabel: itemJson.instance_ofLabel?.value || "No label found",
+                publicationLabel: itemJson.publicationLabel?.value || "No label found",
+                doi: itemJson.doi_id?.value || "",
+                rawFullResources: itemJson.full_resources?.value || "",
                 term: this.term,
             });
             items.push(item);
@@ -108,7 +95,6 @@ export class Query {
     get wdqsQueryString(): string {
         console.debug("wdqsQueryString: running");
         console.debug(`using cirrussearch_string: '${this.cirrussearch.escapedCirrussearchString}'`);
-        // we include the user agent to help the sysops know where the queries come from
         return `
             #${USER_AGENT}
             SELECT DISTINCT ?item ?itemLabel ?instance_ofLabel
@@ -137,12 +123,10 @@ export class Query {
     }
 
     get getInTitleGoogleUrl(): string {
-        const gs = new GoogleScholarSearch(this.term);
-        return gs.inTitleUrl();
+        return new GoogleScholarSearch(this.term).inTitleUrl();
     }
 
     get getEverywhereGoogleUrl(): string {
-        const gs = new GoogleScholarSearch(this.term);
-        return gs.everywhereUrl();
+        return new GoogleScholarSearch(this.term).everywhereUrl();
     }
 }
