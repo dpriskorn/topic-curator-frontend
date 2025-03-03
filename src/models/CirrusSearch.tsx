@@ -45,7 +45,7 @@ export class CirrusSearch {
         return input.replace(/'/g, "\\'").replace(/"/g, '\\"');
     }
 
-    async cirrussearchTotal(): Promise<number> {
+    async totalHits(): Promise<number> {
         console.debug("Getting CirrusSearch total");
 
         if (!this.term.string) {
@@ -75,7 +75,7 @@ export class CirrusSearch {
         }
     }
 
-    get cirrussearchUrl(): string {
+    get url(): string {
         console.debug("Accessing cirrussearchUrl getter...");
         const searchString = this.cirrussearchString;
         console.debug("CirrusSearch String:", searchString);
