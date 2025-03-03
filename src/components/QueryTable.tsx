@@ -22,8 +22,12 @@ const QueryTable: React.FC<QueryTableProps> = ({ queries }) => {
                     {queries.map((query, index) => (
                         <tr key={index}>
                             <td>{index + 1}</td>
-                            <td>{query.term.label}</td>
-                            <td>{query.itemCount}</td>
+                            <td>{query.term.string}</td>
+                            <td>
+                                <a href={query.wdqsUrl} target="_blank" rel="noopener noreferrer">
+                                    {query.itemCount}
+                                </a>
+                            </td>
                             <td>{query.hasBeenRun ? "Yes" : "No"}</td>
                             <td>
                                 <a href={query.getInTitleGoogleUrl} target="_blank" rel="noopener noreferrer">
