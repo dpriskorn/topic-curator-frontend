@@ -49,5 +49,11 @@ class SparqlItem extends Item {
             return this.itemLabel;
         }
     }
+    /**
+     * Returns the DOI URL if the QID corresponds to a DOI entity.
+     */
+    get doiUrl(): string {
+        return `https://doi.org/${this.doi}`;
+    }
 }
 export { SparqlItem };
