@@ -84,9 +84,8 @@ const ResultsTable: React.FC<ResultsTableProps> = ({ results, item }) => {
                 />
               </td>
               <td>
-                <a href={item.qidUrl} target="_blank" rel="noopener noreferrer">
-                  {item.itemLabel}
-                </a>
+              <a href={item.qidUrl} target="_blank" rel="noopener noreferrer" 
+              dangerouslySetInnerHTML={{ __html: item.highlightedItemLabel }}></a>
               </td>
               <td>{item.instanceOfLabel}</td>
               <td>{item.publicationLabel}</td>
