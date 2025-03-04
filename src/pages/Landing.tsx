@@ -57,22 +57,6 @@ const LandingPage = () => {
   
   return (
     <main className="container mb-3">
-      <div className="row justify-content-center">
-        <div className="text-center">
-        <ul id="progressbar">
-            <ProgressStep isActive={true} id="step1" text="Choose language, topic and subgraph" />
-            <ProgressStep isActive={false} id="step2" text="Process subtopics" />
-            <ProgressStep isActive={false} id="step3" text="Choose terms" />
-            <ProgressStep isActive={false} id="step4" text="Handle results" />
-            <ProgressStep isActive={false} id="step5" text="Send to QS" />
-          </ul>
-          <div className="progress">
-            <div className="progress-bar"></div>
-          </div>
-          <br />
-        </div>
-      </div>
-
       <div className="row">
         <form id="langForm">
           <dl className="row">
