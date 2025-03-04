@@ -95,7 +95,7 @@ const Results = () => {
       {!loading && !error && queries.length > 0 && <QueryTable queries={queries} />}
       
       <h2>Results</h2>
-      {!loading && !error && results.length > 0 && <ResultsTable results={results} />}
+      {!loading && !error && results.length > 0 && qid && <ResultsTable results={results} item={new Item(qid, lang)} />}
     </main>
   );
 };
