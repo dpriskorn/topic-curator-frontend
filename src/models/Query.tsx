@@ -4,7 +4,6 @@ import apiClient from "../components/apiClient";
 import { SparqlResponse } from "../types/sparql";
 import { CirrusSearch } from "./CirrusSearch";
 import { GoogleScholarSearch } from "./GoogleScholarSearch";
-import { Item } from "./Item";
 import { SparqlItem } from "./SparqlItem";
 import { Term } from "./Term";
 import { TopicParameters } from "./TopicParameters";
