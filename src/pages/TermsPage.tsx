@@ -4,6 +4,7 @@ import { Term } from "../models/Term";
 import { TermSource } from "../enums/TermSource";
 import { Item } from "../models/Item";
 import { Terms } from "../models/Terms";
+import Footer from "../components/layout/Footer";
 
 const TermsComponent = () => {
   const [searchParams] = useSearchParams();
@@ -115,6 +116,7 @@ const TermsComponent = () => {
           </div>
         </form>
       </div>
+      <Footer />
     </main>
   );
 };

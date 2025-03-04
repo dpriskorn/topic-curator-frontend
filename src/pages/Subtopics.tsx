@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import CirrusSearchFetcher from '../components/CirrusSearchFetcher';
+import Footer from '../components/layout/Footer';
 
 const Subtopics = () => {
     const [searchParams] = useSearchParams();
@@ -140,6 +141,7 @@ const Subtopics = () => {
                     </button>
                 </div>
             )}
+            <Footer />
         </main>
     );
 };

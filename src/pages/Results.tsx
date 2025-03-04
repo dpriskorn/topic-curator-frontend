@@ -11,6 +11,7 @@ import ResultsTable from "../components/ResultsTable";
 import QueryTable from "../components/QueryTable";
 import { SparqlItem } from "../models/SparqlItem";
 import ItemDetails from "../components/ItemDetails";
+import Footer from "../components/layout/Footer";
 
 const Results = () => {
   const [searchParams] = useSearchParams();
@@ -97,7 +98,8 @@ const Results = () => {
       
       <h2>Results</h2>
       {!loading && !error && results.length > 0 && qid && <ResultsTable results={results} item={new Item(qid, lang)} />}
-    </main>
+      <Footer />
+      </main>
   );
 };
 

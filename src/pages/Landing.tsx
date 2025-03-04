@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import Footer from '../components/layout/Footer';
 
 const ProgressStep = ({ isActive, id, text }: { isActive: boolean; id: string; text: string }) => (
   <li className={isActive ? 'active' : ''} id={id}>
@@ -168,6 +169,7 @@ const LandingPage = () => {
           </ul>
         </div>
       )}
+      <Footer />
     </main>
   );
 };
