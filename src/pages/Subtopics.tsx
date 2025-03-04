@@ -3,6 +3,7 @@ import { useSearchParams, useNavigate } from 'react-router-dom';
 import CirrusSearchFetcher from '../components/CirrusSearchFetcher';
 import Footer from '../components/layout/Footer';
 import { Item } from '../models/Item';
+import ItemDetails from '../components/ItemDetails';
 
 const Subtopics = () => {
     const [searchParams] = useSearchParams();
@@ -10,50 +11,58 @@ const Subtopics = () => {
 
     // Extract query parameters
     const qid = searchParams.get('qid');
-    const label = searchParams.get('label') || "";
     const lang = searchParams.get('lang') || 'en';
     const subgraph = searchParams.get('subgraph') || 'scientific_articles';
-
-    useEffect(() => {
-        if (!qid) {
-            setError("Missing required parameter {qid}");
-            return;
-        }
-    }, [qid, navigate]);
 
     // State variables
     const [subtopics, setSubtopics] = useState<any[]>([]);
     const [checkedRows, setCheckedRows] = useState<boolean[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
+    const [label, setLabel] = useState<string | null>(null);
 
-    // Fetch subtopics from backend on load
     useEffect(() => {
-        if (!qid) return;
+        if (!qid) {
+            setError('Missing required parameter {qid}');
+            return;
+        }
 
-        setLoading(true);
-        fetch(`http://0.0.0.0:8000/v0/subtopics?lang=${lang}&qid=${qid}&subgraph=${subgraph}`)
-            .then(response => response.json())
-            .then(data => {
+        const fetchData = async () => {
+            try {
+                const item = new Item(qid);
+                const labelValue = await item.fetchLabel();
+                setLabel(labelValue);
+
+                // Fetch subtopics only after the label is set
+                setLoading(true);
+                const response = await fetch(
+                    `http://0.0.0.0:8000/v0/subtopics?lang=${lang}&qid=${qid}&subgraph=${subgraph}`,
+                );
+                const data = await response.json();
                 const fetchedSubtopics = data.subtopics || [];
                 setSubtopics(fetchedSubtopics);
                 setCheckedRows(new Array(fetchedSubtopics.length).fill(false));
 
                 // Redirect to /terms if no subtopics were found
                 if (fetchedSubtopics.length === 0) {
-                    let redirectUrl = `/terms?qid=${encodeURIComponent(qid)}&label=${encodeURIComponent(label)}`;
-                    if (lang !== 'en') redirectUrl += `&lang=${encodeURIComponent(lang)}`;
-                    if (subgraph !== 'scientific_articles') redirectUrl += `&subgraph=${encodeURIComponent(subgraph)}`;
+                    let redirectUrl = `/terms?qid=${encodeURIComponent(qid ?? '')}&label=${encodeURIComponent(labelValue)}`;
+                    if (lang !== 'en')
+                        redirectUrl += `&lang=${encodeURIComponent(lang)}`;
+                    if (subgraph !== 'scientific_articles')
+                        redirectUrl += `&subgraph=${encodeURIComponent(subgraph)}`;
 
                     navigate(redirectUrl, { replace: true });
                 }
-            })
-            .catch(error => {
-                console.error('Error fetching subtopics:', error);
-                setError('Failed to load subtopics. Please try again.');
-            })
-            .finally(() => setLoading(false));
-    }, [qid, lang, label, subgraph, navigate]);
+            } catch (error) {
+                console.error('Error fetching data:', error);
+                setError('Failed to load data. Please try again.');
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchData();
+    }, [qid, lang, subgraph, navigate]);
 
     // Handle checkbox selection
     const handleCheckboxChange = (index: number) => {
@@ -77,23 +86,27 @@ const Subtopics = () => {
     const generateSubtopicLink = (subtopicQid: string, label: string) => {
         let url = `/subtopics?qid=${encodeURIComponent(subtopicQid)}`;
         if (lang !== 'en') url += `&lang=${encodeURIComponent(lang)}`;
-        if (subgraph !== 'scientific_articles') url += `&subgraph=${encodeURIComponent(subgraph)}`;
+        if (subgraph !== 'scientific_articles')
+            url += `&subgraph=${encodeURIComponent(subgraph)}`;
         if (label) url += `&label=${encodeURIComponent(label)}`;
         return url;
     };
 
-    let item = null;
-    if (qid){
-        item = new Item(qid);
-    }
-
     return (
         <main className="container mt-4">
             <h2>
-                Subtopics for{" "}
-                {item ? <a href={item.qidUrl}>{label}</a> : <span>{label}</span>}
+                Subtopics for{' '}
+                {label ? (
+                    <a href={`https://www.wikidata.org/wiki/${qid}`}>{label}</a>
+                ) : (
+                    <span>Loading...</span>
+                )}
             </h2>
-            {loading && <div className="alert alert-info">Loading subtopics...</div>}
+            {qid && <ItemDetails item={new Item(qid, lang)} />}
+
+            {loading && (
+                <div className="alert alert-info">Loading subtopics...</div>
+            )}
             {error && <div className="alert alert-danger">{error}</div>}
 
             {subtopics.length > 0 && (
@@ -113,7 +126,11 @@ const Subtopics = () => {
                             <tr key={subtopic.qid}>
                                 <td>{index + 1}</td>
                                 <td>
-                                    <a href={generateUrl(subtopic.qid)} target="_blank" rel="noopener noreferrer">
+                                    <a
+                                        href={generateUrl(subtopic.qid)}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                    >
                                         {subtopic.label}
                                     </a>
                                 </td>
@@ -122,14 +139,30 @@ const Subtopics = () => {
                                     {subtopic.label_missing ? (
                                         <span>N/A</span>
                                     ) : (
-                                        <CirrusSearchFetcher qid={subtopic.qid} term={subtopic.label} subgraph={subgraph} />
+                                        <CirrusSearchFetcher
+                                            qid={subtopic.qid}
+                                            term={subtopic.label}
+                                            subgraph={subgraph}
+                                        />
                                     )}
                                 </td>
                                 <td>
-                                    <input type="checkbox" checked={checkedRows[index]} onChange={() => handleCheckboxChange(index)} />
+                                    <input
+                                        type="checkbox"
+                                        checked={checkedRows[index]}
+                                        onChange={() =>
+                                            handleCheckboxChange(index)
+                                        }
+                                    />
                                 </td>
                                 <td>
-                                    <a target="_blank" href={generateSubtopicLink(subtopic.qid, subtopic.label)}>
+                                    <a
+                                        target="_blank"
+                                        href={generateSubtopicLink(
+                                            subtopic.qid,
+                                            subtopic.label,
+                                        )}
+                                    >
                                         Match
                                     </a>
                                 </td>
@@ -141,19 +174,29 @@ const Subtopics = () => {
 
             {subtopics.length > 0 && (
                 <div className="mt-3">
-                    <input type="checkbox" checked={allChecked} onChange={handleCheckAll} /> Check All
-                    <p className="text-warning">Please match all the subtopics individually before proceeding.</p>
-                    <button 
-                        className="btn btn-primary" 
+                    <input
+                        type="checkbox"
+                        checked={allChecked}
+                        onChange={handleCheckAll}
+                    />{' '}
+                    Check All
+                    <p className="text-warning">
+                        Please match all the subtopics individually before
+                        proceeding.
+                    </p>
+                    <button
+                        className="btn btn-primary"
                         onClick={() => {
-                            let redirectUrl = `/terms?qid=${encodeURIComponent(qid)}&label=${encodeURIComponent(label)}`;
-                            if (lang !== 'en') redirectUrl += `&lang=${encodeURIComponent(lang)}`;
-                            if (subgraph !== 'scientific_articles') redirectUrl += `&subgraph=${encodeURIComponent(subgraph)}`;
+                            let redirectUrl = `/terms?qid=${encodeURIComponent(qid ?? '')}&label=${encodeURIComponent(label ?? '')}`;
+                            if (lang !== 'en')
+                                redirectUrl += `&lang=${encodeURIComponent(lang)}`;
+                            if (subgraph !== 'scientific_articles')
+                                redirectUrl += `&subgraph=${encodeURIComponent(subgraph)}`;
 
                             navigate(redirectUrl);
                         }}
                     >
-                        Match {label}
+                        Match {label ?? 'Topic'}
                     </button>
                 </div>
             )}
