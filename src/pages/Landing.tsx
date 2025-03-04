@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Footer from '../components/layout/Footer';
+import { Item } from '../models/Item';
 
 const ProgressStep = ({ isActive, id, text }: { isActive: boolean; id: string; text: string }) => (
   <li className={isActive ? 'active' : ''} id={id}>
@@ -14,8 +15,8 @@ const LandingPage = () => {
     lang: 'en',
     subgraph: 'scientific_articles' // Default selected subgraph
   });
-  const [loading, setLoading] = useState(false);
-  const [subtopics, setSubtopics] = useState<any[]>([]);
+  const [loading] = useState(false);
+  const [subtopics] = useState<Item[]>([]);
   const [error, setError] = useState(''); // State for error messages
   const navigate = useNavigate(); // Initialize navigate
 
