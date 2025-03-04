@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import CirrusSearchFetcher from '../components/CirrusSearchFetcher';
 import Footer from '../components/layout/Footer';
+import { Item } from '../models/Item';
 
 const Subtopics = () => {
     const [searchParams] = useSearchParams();
@@ -13,10 +14,9 @@ const Subtopics = () => {
     const lang = searchParams.get('lang') || 'en';
     const subgraph = searchParams.get('subgraph') || 'scientific_articles';
 
-    // Redirect to root if qid is missing
     useEffect(() => {
         if (!qid) {
-            setError("Missing required parameters");
+            setError("Missing required parameter {qid}");
             return;
         }
     }, [qid, navigate]);
@@ -82,10 +82,17 @@ const Subtopics = () => {
         return url;
     };
 
+    let item = null;
+    if (qid){
+        item = new Item(qid);
+    }
+
     return (
         <main className="container mt-4">
-            <h2>Subtopics for QID: {qid}</h2>
-
+            <h2>
+                Subtopics for{" "}
+                {item ? <a href={item.qidUrl}>{label}</a> : <span>{label}</span>}
+            </h2>
             {loading && <div className="alert alert-info">Loading subtopics...</div>}
             {error && <div className="alert alert-danger">{error}</div>}
 
@@ -137,7 +144,7 @@ const Subtopics = () => {
                     <input type="checkbox" checked={allChecked} onChange={handleCheckAll} /> Check All
                     <p className="text-warning">Please match all the subtopics individually before proceeding.</p>
                     <button className="btn btn-primary" onClick={() => navigate('/terms')}>
-                        Match
+                        Match {label}
                     </button>
                 </div>
             )}
