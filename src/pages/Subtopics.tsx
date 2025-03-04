@@ -9,7 +9,7 @@ const Subtopics = () => {
 
     // Extract query parameters
     const qid = searchParams.get('qid');
-    const label = searchParams.get('label');
+    const label = searchParams.get('label') || "";
     const lang = searchParams.get('lang') || 'en';
     const subgraph = searchParams.get('subgraph') || 'scientific_articles';
 
@@ -53,7 +53,7 @@ const Subtopics = () => {
                 setError('Failed to load subtopics. Please try again.');
             })
             .finally(() => setLoading(false));
-    }, [qid, lang, subgraph, navigate]);
+    }, [qid, lang, label, subgraph, navigate]);
 
     // Handle checkbox selection
     const handleCheckboxChange = (index: number) => {
