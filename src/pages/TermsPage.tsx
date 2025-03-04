@@ -1,55 +1,56 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useSearchParams } from "react-router-dom";
 import { Term } from "../models/Term";
 import { TermSource } from "../enums/TermSource";
 import { Item } from "../models/Item";
 import { Terms } from "../models/Terms";
 
-const TermsComponent = ({ default_limit }) => {
+const TermsComponent = () => {
   const [searchParams] = useSearchParams();
   const qid = searchParams.get("qid") || "N/A";
   const lang = searchParams.get("lang") || "en";
   const subgraph = searchParams.get("subgraph") || "default";
   const label = searchParams.get("label") || "";
 
-  // Initialize Terms with an array of Term objects (fix potential string issue)
-  const initialTerms = label ? [new Term(String(label), TermSource.USER)] : [];
-  const [termsManager] = useState(new Terms(initialTerms));
+  // Use useRef for termsManager to persist without triggering re-renders
+  const termsManagerRef = useRef(new Terms(label ? [new Term(String(label), TermSource.LABEL)] : []));
 
   const [newTerm, setNewTerm] = useState("");
   const [showError, setShowError] = useState(false);
   const [fetchError, setFetchError] = useState(null);
+  const [terms, setTerms] = useState(termsManagerRef.current.getTerms()); // Track terms separately for rendering
 
   useEffect(() => {
     if (qid === "N/A") return;
-  
+
     const fetchAliases = async () => {
       try {
         const item = new Item(qid, lang);
         const fetchedAliases = await item.fetchAliasTerms(); // FIX: Correct method name
         console.debug("Fetched Aliases from API:", fetchedAliases);
-  
+
         // Ensure aliases are valid Term objects before adding them
         if (!Array.isArray(fetchedAliases) || fetchedAliases.some(alias => !(alias instanceof Term))) {
           console.error("Invalid alias data format:", fetchedAliases);
           setFetchError("Fetched aliases contain invalid data.");
           return;
         }
-  
-        termsManager.addTerms(fetchedAliases);
-        console.debug("Terms after adding aliases:", termsManager.getTerms());
+
+        termsManagerRef.current.addTerms(fetchedAliases);
+        setTerms([...termsManagerRef.current.getTerms()]); // Trigger re-render
       } catch (error) {
         setFetchError(error.message);
       }
     };
-  
+
     fetchAliases();
-  }, [qid, lang]);
-  
+  }, [qid, lang]); // 'termsManagerRef' is stable and does not need to be in dependencies
+
   const addTerm = () => {
     if (newTerm.trim() !== "") {
       const termObj = new Term(newTerm, TermSource.USER);
-      termsManager.addTerm(termObj);
+      termsManagerRef.current.addTerm(termObj);
+      setTerms([...termsManagerRef.current.getTerms()]); // Update state to trigger re-render
       setNewTerm("");
       setShowError(false);
     }
@@ -87,7 +88,7 @@ const TermsComponent = ({ default_limit }) => {
                 </tr>
               </thead>
               <tbody>
-                {termsManager.getTerms().map((term, index) => (
+                {terms.map((term, index) => (
                   <tr key={index}>
                     <td>
                       <input type="checkbox" name="terms" value={term.string} defaultChecked />
