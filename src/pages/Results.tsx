@@ -47,7 +47,8 @@ const Results = () => {
           ? (subgraph as Subgraph)
           : Subgraph.SCIENTIFIC_ARTICLES;
 
-        const topicParameters = new TopicParameters(topicItem, 10, termsObject, subgraphInstance);
+        // 10k is max because of limitations in CirrusSearch
+        const topicParameters = new TopicParameters(topicItem, 10000, termsObject, subgraphInstance);
         const allQueries: Query[] = [];
         let allResults: SparqlItem[] = [];
 
