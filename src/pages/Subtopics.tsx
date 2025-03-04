@@ -143,7 +143,16 @@ const Subtopics = () => {
                 <div className="mt-3">
                     <input type="checkbox" checked={allChecked} onChange={handleCheckAll} /> Check All
                     <p className="text-warning">Please match all the subtopics individually before proceeding.</p>
-                    <button className="btn btn-primary" onClick={() => navigate('/terms')}>
+                    <button 
+                        className="btn btn-primary" 
+                        onClick={() => {
+                            let redirectUrl = `/terms?qid=${encodeURIComponent(qid)}&label=${encodeURIComponent(label)}`;
+                            if (lang !== 'en') redirectUrl += `&lang=${encodeURIComponent(lang)}`;
+                            if (subgraph !== 'scientific_articles') redirectUrl += `&subgraph=${encodeURIComponent(subgraph)}`;
+
+                            navigate(redirectUrl);
+                        }}
+                    >
                         Match {label}
                     </button>
                 </div>
