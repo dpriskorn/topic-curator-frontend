@@ -1,0 +1,1 @@
+export const TERM_CHARACTER_CHECK_LIMIT = 5;
