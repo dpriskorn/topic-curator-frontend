@@ -4,6 +4,7 @@ import CirrusSearchFetcher from '../components/CirrusSearchFetcher';
 import Footer from '../components/layout/Footer';
 import { Item } from '../models/Item';
 import ItemDetails from '../components/ItemDetails';
+import { SparqlItem } from '../models/SparqlItem';
 
 const Subtopics = () => {
     const [searchParams] = useSearchParams();
@@ -15,7 +16,7 @@ const Subtopics = () => {
     const subgraph = searchParams.get('subgraph') || 'scientific_articles';
 
     // State variables
-    const [subtopics, setSubtopics] = useState<any[]>([]);
+    const [subtopics, setSubtopics] = useState<SparqlItem[]>([]);
     const [checkedRows, setCheckedRows] = useState<boolean[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
@@ -185,8 +186,9 @@ const Subtopics = () => {
                         proceeding.
                     </p>
                     <button
-                        className="btn btn-primary"
+                        className="btn btn-primary mt-2"
                         onClick={() => {
+                            if (!allChecked) return;
                             let redirectUrl = `/terms?qid=${encodeURIComponent(qid ?? '')}&label=${encodeURIComponent(label ?? '')}`;
                             if (lang !== 'en')
                                 redirectUrl += `&lang=${encodeURIComponent(lang)}`;
@@ -195,9 +197,10 @@ const Subtopics = () => {
 
                             navigate(redirectUrl);
                         }}
+                        disabled={!allChecked}
                     >
                         Match {label ?? 'Topic'}
-                    </button>
+                    </button>{' '}
                 </div>
             )}
             <Footer />
