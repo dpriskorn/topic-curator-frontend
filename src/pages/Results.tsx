@@ -3,7 +3,6 @@ import { useSearchParams } from "react-router-dom";
 import { Query } from "../models/Query";
 import { Term } from "../models/Term";
 import { TermSource } from "../enums/TermSource";
-import { TopicParameters } from "../models/TopicParameters";
 import { Item } from "../models/Item";
 import { Terms } from "../models/Terms";
 import { Subgraph } from "../enums/Subgraph";
@@ -12,6 +11,7 @@ import QueryTable from "../components/QueryTable";
 import { SparqlItem } from "../models/SparqlItem";
 import ItemDetails from "../components/ItemDetails";
 import Footer from "../components/layout/Footer";
+import { CirrusSearch } from "../models/CirrusSearch";
 
 const Results = () => {
   const [searchParams] = useSearchParams();
@@ -49,7 +49,7 @@ const Results = () => {
           : Subgraph.SCIENTIFIC_ARTICLES;
 
         // 10k is max because of limitations in CirrusSearch
-        const topicParameters = new TopicParameters(topicItem, 10000, termsObject, subgraphInstance);
+        const limit = 10000;
         const allQueries: Query[] = [];
         let allResults: SparqlItem[] = [];
 
@@ -57,7 +57,12 @@ const Results = () => {
 
         for (const termString of terms) {
           const term = new Term(termString, TermSource.USER);
-          const query = new Query(lang, term, topicParameters);
+          const cirrussearch = new CirrusSearch(
+              topicItem,
+              term,
+              subgraphInstance,
+          );
+          const query = new Query(limit, cirrussearch);
           await query.runAndGetItems();
           
           console.debug("query has been run: ", query.hasBeenRun);

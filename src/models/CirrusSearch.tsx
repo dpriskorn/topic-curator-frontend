@@ -4,8 +4,9 @@ import { Subgraph } from "../enums/Subgraph";
 import { prefixConfig } from "../../public/config/prefix";
 import axios from "axios";
 
+/* This class is needed to construct the correct CirrusSearch strings used in WDQS SPARQL*/
 export class CirrusSearch {
-    topic: Item;
+    item: Item;
     term: Term;
     subgraph: Subgraph;
     userPrefix: string;
@@ -14,11 +15,11 @@ export class CirrusSearch {
     constructor(
         topic: Item,
         term: Term,
-        subgraph: Subgraph,
+        subgraph: Subgraph = Subgraph.SCIENTIFIC_ARTICLES,
         userPrefix: string = "",
         affix: string = ""
     ) {
-        this.topic = topic;
+        this.item = topic;
         this.term = term;
         this.subgraph = subgraph;
         this.userPrefix = userPrefix;
@@ -30,7 +31,7 @@ export class CirrusSearch {
             return this.userPrefix;
         }
         const prefixTemplate = prefixConfig[this.subgraph];
-        return prefixTemplate ? prefixTemplate.replace("{0}", this.topic.qid) : "";
+        return prefixTemplate ? prefixTemplate.replace("{0}", this.item.qid) : "";
     }
 
     get escapedCirrussearchString(): string {
@@ -76,7 +77,7 @@ export class CirrusSearch {
     }
 
     get url(): string {
-        console.debug("Accessing cirrussearchUrl getter...");
+        console.debug('CirrusSearch:url: running');
         const searchString = this.cirrussearchString;
         console.debug("CirrusSearch String:", searchString);
     

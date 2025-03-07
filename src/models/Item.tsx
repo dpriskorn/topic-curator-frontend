@@ -4,7 +4,7 @@ import { TermSource } from "../enums/TermSource";
 
 class Item {
     public qid: string;
-    private lang: string;
+    public lang: string;
 
     constructor(qid: string, lang: string = 'en') {
         // Remove "http://www.wikidata.org/entity/" if present

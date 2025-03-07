@@ -1,87 +1,78 @@
-import { WIKIDATA_SPARQL_ENDPOINT } from "../../public/config/sparql";
-import USER_AGENT from "../../public/config/userAgent";
-import apiClient from "../components/apiClient";
-import { SparqlResponse } from "../types/sparql";
-import { CirrusSearch } from "./CirrusSearch";
-import { GoogleScholarSearch } from "./GoogleScholarSearch";
-import { SparqlItem } from "./SparqlItem";
-import { Term } from "./Term";
-import { TopicParameters } from "./TopicParameters";
+import { WIKIDATA_SPARQL_ENDPOINT } from '../../public/config/sparql';
+import USER_AGENT from '../../public/config/userAgent';
+import apiClient from '../components/apiClient';
+import { SparqlResponse } from '../types/sparql';
+import { CirrusSearch } from './CirrusSearch';
+import { GoogleScholarSearch } from './GoogleScholarSearch';
+import { SparqlItem } from './SparqlItem';
 
+/* Term and Item are in CirrusSearch. Lang is in Item */
 export class Query {
-    lang: string;
-    term: Term;
-    parameters: TopicParameters;
+    limit: number;
+    cirrussearch: CirrusSearch;
     items: SparqlItem[] = [];
     hasBeenRun: boolean = false;
 
-    constructor(lang: string, term: Term, parameters: TopicParameters) {
-        this.lang = lang;
-        this.term = term;
-        this.parameters = parameters;
+    constructor(limit: number, cirrussearch: CirrusSearch) {
+        this.limit = limit;
+        this.cirrussearch = cirrussearch;
     }
-
-    /* Helper method */
-    // get topic(): Item {
-    //     return this.parameters.topic;
-    // }
 
     get itemCount(): number {
         return this.items.length;
     }
-    
-    get cirrussearch(): CirrusSearch {
-        return this.parameters.getCirrusSearch(this.term);
-    }
 
-    get calculatedLimit(): number {
-        return this.parameters.limit - this.itemCount;
+    /* TODO why not just use this.limit?  */
+    get sparqlLimit(): number {
+        return this.limit - this.itemCount;
     }
 
     private async execute(): Promise<SparqlResponse> {
-        console.debug("execute: running");
+        console.debug('execute: running');
         if (!this.wdqsQueryString) {
-            throw new Error("no query string");
+            throw new Error('no query string');
         }
-        console.debug("wdqsQueryString:", this.wdqsQueryString);
+        console.debug('wdqsQueryString:', this.wdqsQueryString);
 
         try {
             const response = await apiClient.get(WIKIDATA_SPARQL_ENDPOINT, {
-                params: { query: this.wdqsQueryString, format: "json" },
+                params: { query: this.wdqsQueryString, format: 'json' },
             });
             return response.data;
         } catch (error) {
-            console.error("SPARQL query failed:", error);
-            throw new Error("SPARQL execution failed");
+            console.error('SPARQL query failed:', error);
+            throw new Error('SPARQL execution failed');
         }
     }
 
     private async runAndParseResults(): Promise<undefined> {
-        console.debug("runAndParseResults: running");
+        console.debug('runAndParseResults: running');
         const items: SparqlItem[] = [];
         const results = await this.execute();
-    
+
         if (!results || !results.results || !results.results.bindings) {
-            console.warn("No results returned or results are undefined.");
+            console.warn('No results returned or results are undefined.');
         }
-    
+
         for (const itemJson of results.results.bindings) {
             const item = new SparqlItem({
-                qid: itemJson.item?.value || "",
-                itemLabel: itemJson.itemLabel?.value || "No label found",
-                instanceOfLabel: itemJson.instance_ofLabel?.value || "No label found",
-                publicationLabel: itemJson.publicationLabel?.value || "No label found",
-                doi: itemJson.doi_id?.value || "",
-                rawFullResources: itemJson.full_resources?.value || "",
-                term: this.term,
+                qid: itemJson.item?.value || '',
+                itemLabel: itemJson.itemLabel?.value || 'No label found',
+                instanceOfLabel:
+                    itemJson.instance_ofLabel?.value || 'No label found',
+                publicationLabel:
+                    itemJson.publicationLabel?.value || 'No label found',
+                doi: itemJson.doi_id?.value || '',
+                rawFullResources: itemJson.full_resources?.value || '',
+                term: this.cirrussearch.term,
             });
             items.push(item);
         }
         this.items = items;
     }
-    
+
     async runAndGetItems(): Promise<undefined> {
-        console.debug("runAndGetItems: running");
+        console.debug('runAndGetItems: running');
         await this.runAndParseResults();
         this.hasBeenRun = true;
     }
@@ -89,19 +80,21 @@ export class Query {
     get generate279MinusLines(): string {
         const lines: string[] = [];
         for (let levels = 2; levels < 15; levels++) {
-            const subpath = "wdt:P921";
+            const subpath = 'wdt:P921';
             let path = subpath;
             for (let i = 1; i < levels; i++) {
                 path += `/${subpath}`;
             }
-            lines.push(`\t\tMINUS {?item ${path} wd:${this.qid}. }`);
+            lines.push(`\t\tMINUS {?item ${path} wd:${this.cirrussearch.item.qid}. }`);
         }
-        return lines.join("\n");
+        return lines.join('\n');
     }
 
     get wdqsQueryString(): string {
-        console.debug("wdqsQueryString: running");
-        console.debug(`using cirrussearch_string: '${this.cirrussearch.escapedCirrussearchString}'`);
+        console.debug('wdqsQueryString: running');
+        console.debug(
+            `using cirrussearch_string: '${this.cirrussearch.escapedCirrussearchString}'`,
+        );
         return `
             #${USER_AGENT}
             SELECT DISTINCT ?item ?itemLabel ?instance_ofLabel
@@ -122,29 +115,24 @@ export class Query {
               OPTIONAL { ?item wdt:P356 ?doi_id. }
               OPTIONAL { ?item wdt:P953 ?full_resource. }
               ${this.generate279MinusLines}
-              SERVICE wikibase:label { bd:serviceParam wikibase:language "${this.lang}". }
+              SERVICE wikibase:label { bd:serviceParam wikibase:language "${this.cirrussearch.item.lang}". }
             }
             GROUP BY ?item ?itemLabel ?instance_ofLabel ?publicationLabel ?doi_id
-            LIMIT ${this.calculatedLimit}
+            LIMIT ${this.sparqlLimit}
         `;
     }
 
     get getInTitleGoogleUrl(): string {
-        return new GoogleScholarSearch(this.term).inTitleUrl();
+        return new GoogleScholarSearch(this.cirrussearch.term).inTitleUrl();
     }
 
     get getEverywhereGoogleUrl(): string {
-        return new GoogleScholarSearch(this.term).everywhereUrl();
+        return new GoogleScholarSearch(this.cirrussearch.term).everywhereUrl();
     }
 
     /* Helper method */
     get wdqsUrl(): string {
         const encodedQuery = encodeURIComponent(this.wdqsQueryString);
         return `https://query.wikidata.org/#${encodedQuery}`;
-    }
-
-    /* Helper method */
-    get qid(): string {
-        return this.parameters.topic.qid;
     }
 }

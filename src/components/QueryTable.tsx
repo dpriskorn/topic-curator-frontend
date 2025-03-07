@@ -22,7 +22,7 @@ const QueryTable: React.FC<QueryTableProps> = ({ queries }) => {
                     {queries.map((query, index) => (
                         <tr key={index}>
                             <td>{index + 1}</td>
-                            <td>{query.term.string}</td>
+                            <td>{query.cirrussearch.term.string}</td>
                             <td>
                                 <a href={query.wdqsUrl} target="_blank" rel="noopener noreferrer">
                                     {query.itemCount}

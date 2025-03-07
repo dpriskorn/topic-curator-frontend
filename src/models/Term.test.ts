@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect } from "vitest";
 import { Term } from "./Term";
 import { TermSource } from "../enums/TermSource";
 

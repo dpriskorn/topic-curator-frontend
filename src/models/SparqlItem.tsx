@@ -8,6 +8,7 @@ class SparqlItem extends Item {
     publicationLabel: string;
     doi: string;
     rawFullResources: string;
+    // term is needed for highlighting
     term: Term;
     cleanedItemLabel: string;
 

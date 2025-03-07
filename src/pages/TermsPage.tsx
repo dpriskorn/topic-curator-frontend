@@ -18,7 +18,7 @@ const TermsComponent = () => {
 
   const [newTerm, setNewTerm] = useState("");
   const [showError, setShowError] = useState(false);
-  const [fetchError, setFetchError] = useState(null);
+  const [fetchError, setFetchError] = useState<string | null>(null);
   const [terms, setTerms] = useState(termsManagerRef.current.getTerms()); // Track terms separately for rendering
 
   useEffect(() => {
@@ -40,7 +40,7 @@ const TermsComponent = () => {
         termsManagerRef.current.addTerms(fetchedAliases);
         setTerms([...termsManagerRef.current.getTerms()]); // Trigger re-render
       } catch (error) {
-        setFetchError(error.message);
+        setFetchError((error as Error).message);
       }
     };
 

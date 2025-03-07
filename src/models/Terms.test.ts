@@ -6,13 +6,13 @@ import { TermSource } from "../enums/TermSource";
 describe("Terms class", () => {
   let term1: Term;
   let term2: Term;
-  let term3: Term;
+  //let term3: Term;
   let termsInstance: Terms;
 
   beforeEach(() => {
     term1 = new Term("Example-Term", TermSource.LABEL);
     term2 = new Term("Another_Term", TermSource.ALIAS);
-    term3 = new Term("example term", TermSource.USER); // Same string as term1 after normalization
+    //term3 = new Term("example term", TermSource.USER); // Same string as term1 after normalization
 
     termsInstance = new Terms([term1, term2]);
   });

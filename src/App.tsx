@@ -5,16 +5,17 @@ import Terms from './pages/TermsPage';
 import Results from './pages/Results';
 
 function App() {
-  return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<Landing />} />
-        <Route path="/subtopics" element={<Subtopics />} />
-        <Route path="/terms" element={<Terms lang={undefined} subgraph={undefined} default_limit={undefined} />} /> {/* Add this line */}
-        <Route path="/results" element={<Results lang={undefined} subgraph={undefined} default_limit={undefined} />} /> {/* Add this line */}
-      </Routes>
-    </Router>
-  );
+    // We intentionally don't set any default props here and handle undefined in the page components.
+    return (
+        <Router>
+            <Routes>
+                <Route path="/" element={<Landing />} />
+                <Route path="/subtopics" element={<Subtopics />} />
+                <Route path="/terms" element={<Terms />} />
+                <Route path="/results" element={<Results />} />
+            </Routes>
+        </Router>
+    );
 }
 
 export default App;
