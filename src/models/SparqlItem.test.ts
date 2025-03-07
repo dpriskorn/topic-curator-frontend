@@ -1,10 +1,11 @@
 import { describe, it, expect } from "vitest";
 import { SparqlItem } from "./SparqlItem";
 import { Term } from "./Term";
+import { TermSource } from "../enums/TermSource";
 
 describe("SparqlItem", () => {
   it("should initialize with default values", () => {
-    const term = new Term("test");
+    const term = new Term("test", TermSource.USER);
     const item = new SparqlItem({
       qid: "Q1",
       term,
@@ -21,7 +22,7 @@ describe("SparqlItem", () => {
   });
 
   it("should allow custom initialization", () => {
-    const term = new Term("science");
+    const term = new Term("science", TermSource.USER);
     const item = new SparqlItem({
       qid: "Q42",
       itemLabel: "Quantum Science",
@@ -43,7 +44,7 @@ describe("SparqlItem", () => {
   });
 
   it("should highlight term in itemLabel", () => {
-    const term = new Term("Science");
+    const term = new Term("Science", TermSource.USER);
     const item = new SparqlItem({
       qid: "Q42",
       itemLabel: "Quantum Science and Technology",
@@ -56,7 +57,7 @@ describe("SparqlItem", () => {
   });
 
   it("should not modify itemLabel if no match is found", () => {
-    const term = new Term("Physics");
+    const term = new Term("Physics", TermSource.USER);
     const item = new SparqlItem({
       qid: "Q42",
       itemLabel: "Quantum Science and Technology",
@@ -67,7 +68,7 @@ describe("SparqlItem", () => {
   });
 
   it("should not highlight 'No label found'", () => {
-    const term = new Term("Science");
+    const term = new Term("Science", TermSource.USER);
     const item = new SparqlItem({
       qid: "Q42",
       term,
