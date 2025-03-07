@@ -55,7 +55,7 @@ const Results = () => {
                 // 10k is max because of limitations in CirrusSearch
                 const limit = 10000;
                 const allQueries: ResultQuery[] = [];
-                let allResults: ResultItem[] = [];
+                const allResultsMap = new Map<string, ResultItem>(); // Map to track unique items by QID
 
                 console.log(`Executing ${terms.length} queries...`);
 
@@ -73,19 +73,24 @@ const Results = () => {
                     console.debug('query itemCount: ', query.itemCount);
 
                     allQueries.push(query);
-                    // TODO prevent duplicates
-                    allResults = [...allResults, ...query.items];
+
+                    // Prevent duplicates by adding only unique QIDs
+                    for (const item of query.items) {
+                        if (!allResultsMap.has(item.qid)) {
+                            allResultsMap.set(item.qid, item);
+                        }
+                    }
                 }
 
-                console.log('Total results fetched:', allResults.length);
+                const allResults = Array.from(allResultsMap.values());
+
+                console.log('Total unique results fetched:', allResults.length);
                 setQueries(allQueries);
                 setResults(allResults);
             } catch (err) {
                 console.error('Error fetching results:', err);
                 setError(
-                    err instanceof Error
-                        ? err.message
-                        : 'An unknown error occurred',
+                    err instanceof Error ? err.message : 'An unknown error occurred',
                 );
             } finally {
                 setLoading(false);
@@ -110,7 +115,7 @@ const Results = () => {
             {!loading && !error && queries.length > 0 && (
                 <QueryTable queries={queries} />
             )}
-
+            <p>Total deduplicated results listed below: {results.length}</p>
             <h2>Results</h2>
             {!loading && !error && results.length > 0 && qid && (
                 <ResultsTable results={results} item={new Item(qid, lang)} />
