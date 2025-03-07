@@ -6,6 +6,7 @@ import { Item } from '../models/Item';
 import { Terms } from '../models/Terms';
 import Footer from '../components/layout/Footer';
 import { TERM_CHARACTER_CHECK_LIMIT } from '../../public/config/limit.tsx';
+import NavbarComponent from '../components/layout/Navbar.tsx';
 
 const TermsComponent = () => {
     const [searchParams] = useSearchParams();
@@ -20,14 +21,17 @@ const TermsComponent = () => {
     const [showError, setShowError] = useState(false);
     const [fetchError, setFetchError] = useState<string | null>(null);
     const [terms, setTerms] = useState(termsManagerRef.current.getTerms()); // Track terms separately for rendering
+    const [label, setLabel] = useState<string | null>(null);
 
     useEffect(() => {
         if (qid === 'N/A') return;
+        document.title = `Terms: ${label}`;
 
         const fetchLabel = async () => {
             try {
                 const item = new Item(qid, lang);
                 const label = await item.fetchLabel(); // FIX: Correct method name
+                setLabel(label);
                 console.debug('Fetched label from API:', label);
 
                 termsManagerRef.current.addTerms([
@@ -78,6 +82,7 @@ const TermsComponent = () => {
 
     return (
         <main className="container mb-3">
+            <NavbarComponent />
             {fetchError && (
                 <p className="alert alert-danger">Error: {fetchError}</p>
             )}

@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Footer from '../components/layout/Footer';
+import NavbarComponent from '../components/layout/Navbar';
 
 const LandingPage = () => {
     const [formData, setFormData] = useState({
@@ -16,6 +17,7 @@ const LandingPage = () => {
 
     // Focus on the QID input field when the component loads
     useEffect(() => {
+        document.title = 'Wikidata Topic Curator';
         if (qidInputRef.current) {
             qidInputRef.current.focus();
         }
@@ -62,6 +64,7 @@ const LandingPage = () => {
 
     return (
         <main className="container mb-3">
+            <NavbarComponent />
             <div className="row">
                 <form id="langForm">
                     <dl className="row">

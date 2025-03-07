@@ -12,6 +12,7 @@ import { ResultItem } from '../models/ResultItem';
 import ItemDetails from '../components/ItemDetails';
 import Footer from '../components/layout/Footer';
 import { CirrusSearch } from '../models/CirrusSearch';
+import NavbarComponent from '../components/layout/Navbar';
 
 const Results = () => {
     const [searchParams] = useSearchParams();
@@ -32,6 +33,7 @@ const Results = () => {
             setLoading(false);
             return;
         }
+        document.title = `Results: ${terms[0]}`;
 
         const fetchResults = async () => {
             try {
@@ -102,6 +104,7 @@ const Results = () => {
 
     return (
         <main className="container mt-3">
+            <NavbarComponent />
             <h1>Working on: {terms[0]}</h1>
             {qid && <ItemDetails item={new Item(qid, lang)} />}
             <h2>CirrusSearch queries</h2>

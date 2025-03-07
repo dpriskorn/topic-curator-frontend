@@ -9,6 +9,7 @@ import { SubtopicQuery } from '../models/SubtopicQuery';
 import { TermSource } from '../enums/TermSource';
 import { CirrusSearch } from '../models/CirrusSearch';
 import { Term } from '../models/Term';
+import NavbarComponent from '../components/layout/Navbar';
 
 const Subtopics = () => {
     const [searchParams] = useSearchParams();
@@ -31,6 +32,8 @@ const Subtopics = () => {
             setError('Missing required parameter {qid}');
             return;
         }
+        document.title = `Subtopics: ${label}`;
+
 
         const fetchData = async () => {
             try {
@@ -95,6 +98,7 @@ const Subtopics = () => {
 
     return (
         <main className="container mt-4">
+            <NavbarComponent />
             <h2>
                 Subtopics for{' '}
                 {label ? (
