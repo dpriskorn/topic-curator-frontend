@@ -15,8 +15,7 @@ class SubtopicItem extends Item {
         label: string;
         description: string;
     }) {
-        super(qid);
-        super(lang);
+        super(qid, lang);
         this.label = label;
         this.description = description;
     }
