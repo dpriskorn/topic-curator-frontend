@@ -5,6 +5,7 @@ import Footer from '../components/layout/Footer';
 import { Item } from '../models/Item';
 import ItemDetails from '../components/ItemDetails';
 import { SubtopicItem } from '../models/SubtopicItem';
+import { SubtopicQuery } from '../models/SubtopicQuery';
 
 const Subtopics = () => {
     const [searchParams] = useSearchParams();
@@ -30,23 +31,19 @@ const Subtopics = () => {
 
         const fetchData = async () => {
             try {
-                const item = new Item(qid);
+                const item = new Item(qid, lang);
                 const labelValue = await item.fetchLabel();
                 setLabel(labelValue);
 
-                // Fetch subtopics only after the label is set
                 setLoading(true);
-                const response = await fetch(
-                    `http://0.0.0.0:8000/v0/subtopics?lang=${lang}&qid=${qid}&subgraph=${subgraph}`,
-                );
-                const data = await response.json();
-                const fetchedSubtopics = data.subtopics || [];
+                const query = new SubtopicQuery(item);
+                await query.fetchAndParse();
+                const fetchedSubtopics = query.items || [];
                 setSubtopics(fetchedSubtopics);
                 setCheckedRows(new Array(fetchedSubtopics.length).fill(false));
 
-                // Redirect to /terms if no subtopics were found
                 if (fetchedSubtopics.length === 0) {
-                    let redirectUrl = `/terms?qid=${encodeURIComponent(qid ?? '')}&label=${encodeURIComponent(labelValue)}`;
+                    let redirectUrl = `/terms?qid=${encodeURIComponent(qid ?? '')}`;
                     if (lang !== 'en')
                         redirectUrl += `&lang=${encodeURIComponent(lang)}`;
                     if (subgraph !== 'scientific_articles')
