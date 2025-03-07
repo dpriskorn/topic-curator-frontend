@@ -1,8 +1,8 @@
-import React from "react";
-import { Query } from "../models/Query";
+import React from 'react';
+import { ResultQuery } from '../models/ResultQuery';
 
 interface QueryTableProps {
-    queries: Query[];
+    queries: ResultQuery[];
 }
 
 const QueryTable: React.FC<QueryTableProps> = ({ queries }) => {
@@ -24,17 +24,29 @@ const QueryTable: React.FC<QueryTableProps> = ({ queries }) => {
                             <td>{index + 1}</td>
                             <td>{query.cirrussearch.term.string}</td>
                             <td>
-                                <a href={query.wdqsUrl} target="_blank" rel="noopener noreferrer">
+                                <a
+                                    href={query.wdqsUrl}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                >
                                     {query.itemCount}
                                 </a>
                             </td>
-                            <td>{query.hasBeenRun ? "Yes" : "No"}</td>
+                            <td>{query.hasBeenRun ? 'Yes' : 'No'}</td>
                             <td>
-                                <a href={query.getInTitleGoogleUrl} target="_blank" rel="noopener noreferrer">
+                                <a
+                                    href={query.getInTitleGoogleUrl}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                >
                                     In title
-                                </a>{" "}
-                                |{" "}
-                                <a href={query.getEverywhereGoogleUrl} target="_blank" rel="noopener noreferrer">
+                                </a>{' '}
+                                |{' '}
+                                <a
+                                    href={query.getEverywhereGoogleUrl}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                >
                                     Everywhere
                                 </a>
                             </td>

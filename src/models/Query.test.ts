@@ -1,20 +1,17 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { Query } from '../models/Query';
+import { ResultQuery } from './ResultQuery';
 import { Term } from '../models/Term';
 import { TermSource } from '../enums/TermSource';
 import { Item } from '../models/Item';
 import { CirrusSearch } from '../models/CirrusSearch';
 
 describe('Query', () => {
-    let term: Term, cirrussearch: CirrusSearch, query: Query;
+    let term: Term, cirrussearch: CirrusSearch, query: ResultQuery;
 
     beforeEach(() => {
         term = new Term('example term', TermSource.ALIAS);
-        cirrussearch = new CirrusSearch(
-            new Item('Q123'),
-            term,
-        );
-        query = new Query(10, cirrussearch);
+        cirrussearch = new CirrusSearch(new Item('Q123'), term);
+        query = new ResultQuery(10, cirrussearch);
     });
 
     it('should initialize Query with given parameters', () => {

@@ -1,7 +1,7 @@
 import { Item } from "./Item";
 import { Term } from "./Term";
 
-class SparqlItem extends Item {
+class ResultItem extends Item {
     // qid is inherited
     itemLabel: string;
     instanceOfLabel: string;
@@ -57,4 +57,4 @@ class SparqlItem extends Item {
         return `https://doi.org/${this.doi}`;
     }
 }
-export { SparqlItem };
+export { ResultItem };

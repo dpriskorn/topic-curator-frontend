@@ -4,7 +4,7 @@ import CirrusSearchFetcher from '../components/CirrusSearchFetcher';
 import Footer from '../components/layout/Footer';
 import { Item } from '../models/Item';
 import ItemDetails from '../components/ItemDetails';
-import { SparqlItem } from '../models/SparqlItem';
+import { SubtopicItem } from '../models/SubtopicItem';
 
 const Subtopics = () => {
     const [searchParams] = useSearchParams();
@@ -16,7 +16,7 @@ const Subtopics = () => {
     const subgraph = searchParams.get('subgraph') || 'scientific_articles';
 
     // State variables
-    const [subtopics, setSubtopics] = useState<SparqlItem[]>([]);
+    const [subtopics, setSubtopics] = useState<SubtopicItem[]>([]);
     const [checkedRows, setCheckedRows] = useState<boolean[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
