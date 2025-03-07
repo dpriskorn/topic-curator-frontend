@@ -11,10 +11,9 @@ const TermsComponent = () => {
   const qid = searchParams.get("qid") || "N/A";
   const lang = searchParams.get("lang") || "en";
   const subgraph = searchParams.get("subgraph") || "default";
-  const label = searchParams.get("label") || "";
 
   // Use useRef for termsManager to persist without triggering re-renders
-  const termsManagerRef = useRef(new Terms(label ? [new Term(String(label), TermSource.LABEL)] : []));
+  const termsManagerRef = useRef(new Terms([]));
 
   const [newTerm, setNewTerm] = useState("");
   const [showError, setShowError] = useState(false);
@@ -23,6 +22,19 @@ const TermsComponent = () => {
 
   useEffect(() => {
     if (qid === "N/A") return;
+
+    const fetchLabel = async () => {
+      try {
+        const item = new Item(qid, lang);
+        const label = await item.fetchLabel(); // FIX: Correct method name
+        console.debug("Fetched label from API:", label);
+
+        termsManagerRef.current.addTerms([new Term(label, TermSource.LABEL)]);
+        setTerms([...termsManagerRef.current.getTerms()]); // Trigger re-render
+      } catch (error) {
+        setFetchError((error as Error).message);
+      }
+    };
 
     const fetchAliases = async () => {
       try {
@@ -44,6 +56,7 @@ const TermsComponent = () => {
       }
     };
 
+    fetchLabel();
     fetchAliases();
   }, [qid, lang]); // 'termsManagerRef' is stable and does not need to be in dependencies
 
@@ -58,66 +71,76 @@ const TermsComponent = () => {
   };
 
   return (
-    <main className="container mb-3">
-      <div className="alert alert-info">
-        <h3>Subtopic Details</h3>
-        <p><strong>QID:</strong> {qid}</p>
-        <p><strong>Label:</strong> {label}</p>
-        <p><strong>Language:</strong> {lang}</p>
-        <p><strong>Subgraph:</strong> {subgraph}</p>
-      </div>
-
-      {fetchError && <p className="alert alert-danger">Error: {fetchError}</p>}
-
-      <div className="row">
-        <form action="/results" method="get">
-          <input type="hidden" name="lang" value={lang} />
-          <input type="hidden" name="subgraph" value={subgraph} />
-          <input type="hidden" name="qid" value={qid} />
-          <input type="hidden" name="label" value={label} />
-
-          <h3>Term list</h3>
-          {showError && <p className="alert alert-danger">At least one term is required.</p>}
+      <main className="container mb-3">
+          {fetchError && (
+              <p className="alert alert-danger">Error: {fetchError}</p>
+          )}
 
           <div className="row">
-            <table className="table table-bordered">
-              <thead>
-                <tr>
-                  <th scope="col">Check</th>
-                  <th scope="col">Term</th>
-                  <th scope="col">Source</th>
-                </tr>
-              </thead>
-              <tbody>
-                {terms.map((term, index) => (
-                  <tr key={index}>
-                    <td>
-                      <input type="checkbox" name="terms" value={term.string} defaultChecked />
-                    </td>
-                    <td>{term.string}</td>
-                    <td><span className="source">{term.source}</span></td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-            <input
-              type="text"
-              className="form-control"
-              placeholder="Add term to list"
-              value={newTerm}
-              onChange={(e) => setNewTerm(e.target.value)}
-            />
-            <button type="button" onClick={addTerm} className="btn btn-secondary btn-sm me-2">
-              Add term
-            </button>
-            <button type="submit" className="btn btn-primary btn-sm">
-              Fetch matches
-            </button>
+              <form action="/results" method="get">
+                  <input type="hidden" name="qid" value={qid} />
+                  <input type="hidden" name="lang" value={lang} />
+                  <input type="hidden" name="subgraph" value={subgraph} />
+
+                  <h3>Term list</h3>
+                  {showError && (
+                      <p className="alert alert-danger">
+                          At least one term is required.
+                      </p>
+                  )}
+
+                  <div className="row">
+                      <table className="table table-bordered">
+                          <thead>
+                              <tr>
+                                  <th scope="col">Check</th>
+                                  <th scope="col">Term</th>
+                                  <th scope="col">Source</th>
+                              </tr>
+                          </thead>
+                          <tbody>
+                              {terms.map((term, index) => (
+                                  <tr key={index}>
+                                      <td>
+                                          <input
+                                              type="checkbox"
+                                              name="terms"
+                                              value={term.string}
+                                              defaultChecked
+                                          />
+                                      </td>
+                                      <td>{term.string}</td>
+                                      <td>
+                                          <span className="source">
+                                              {term.source}
+                                          </span>
+                                      </td>
+                                  </tr>
+                              ))}
+                          </tbody>
+                      </table>
+                      <input
+                          type="text"
+                          className="form-control"
+                          placeholder="Add term to list"
+                          value={newTerm}
+                          onChange={(e) => setNewTerm(e.target.value)}
+                      />
+                      <button
+                          type="button"
+                          onClick={addTerm}
+                          className="btn btn-secondary btn-sm me-2"
+                      >
+                          Add term
+                      </button>
+                      <button type="submit" className="btn btn-primary btn-sm">
+                          Fetch matches
+                      </button>
+                  </div>
+              </form>
           </div>
-        </form>
-      </div>
-      <Footer />
-    </main>
+          <Footer />
+      </main>
   );
 };
 
