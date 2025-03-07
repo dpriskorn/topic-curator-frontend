@@ -45,9 +45,11 @@ export class SubtopicQuery extends Query {
             const item = new SubtopicItem({
                 qid: itemJson.item?.value || '',
                 lang: this.item.lang,
-                label: itemJson.itemLabel?.value || 'No label found',
+                label: /^Q\d+$/.test(itemJson.itemLabel?.value)
+                    ? 'No label found'
+                    : itemJson.itemLabel?.value || 'No label found, please improve',
                 description:
-                    itemJson.itemDescription?.value || 'No description found',
+                    itemJson.itemDescription?.value || 'No description found, please improve',
             });
             items.push(item);
         }
