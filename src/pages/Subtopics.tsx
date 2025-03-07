@@ -6,6 +6,9 @@ import { Item } from '../models/Item';
 import ItemDetails from '../components/ItemDetails';
 import { SubtopicItem } from '../models/SubtopicItem';
 import { SubtopicQuery } from '../models/SubtopicQuery';
+import { TermSource } from '../enums/TermSource';
+import { CirrusSearch } from '../models/CirrusSearch';
+import { Term } from '../models/Term';
 
 const Subtopics = () => {
     const [searchParams] = useSearchParams();
@@ -134,14 +137,20 @@ const Subtopics = () => {
                                 </td>
                                 <td>{subtopic.description}</td>
                                 <td>
-                                    {subtopic.label_missing ? (
-                                        <span>N/A</span>
-                                    ) : (
+                                    {subtopic.label ? (
                                         <CirrusSearchFetcher
-                                            qid={subtopic.qid}
-                                            term={subtopic.label}
-                                            subgraph={subgraph}
+                                            cirrusSearch={
+                                                new CirrusSearch(
+                                                    new Item(subtopic.qid),
+                                                    new Term(
+                                                        subtopic.label,
+                                                        TermSource.USER,
+                                                    ),
+                                                )
+                                            }
                                         />
+                                    ) : (
+                                        <span>Loading...</span>
                                     )}
                                 </td>
                                 <td>

@@ -2,6 +2,7 @@ import { Item } from "./Item";
 import { Term } from "./Term";
 import { Subgraph } from "../enums/Subgraph";
 import { prefixConfig } from "../../public/config/prefix";
+import { backendConfig } from '../../public/config/backend';
 import axios from "axios";
 
 /* This class is needed to construct the correct CirrusSearch strings used in WDQS SPARQL*/
@@ -16,8 +17,8 @@ export class CirrusSearch {
         topic: Item,
         term: Term,
         subgraph: Subgraph = Subgraph.SCIENTIFIC_ARTICLES,
-        userPrefix: string = "",
-        affix: string = ""
+        userPrefix: string = '',
+        affix: string = '',
     ) {
         this.item = topic;
         this.term = term;
@@ -31,7 +32,9 @@ export class CirrusSearch {
             return this.userPrefix;
         }
         const prefixTemplate = prefixConfig[this.subgraph];
-        return prefixTemplate ? prefixTemplate.replace("{0}", this.item.qid) : "";
+        return prefixTemplate
+            ? prefixTemplate.replace('{0}', this.item.qid)
+            : '';
     }
 
     get escapedCirrussearchString(): string {
@@ -46,48 +49,40 @@ export class CirrusSearch {
         return input.replace(/'/g, "\\'").replace(/"/g, '\\"');
     }
 
-    async totalHits(): Promise<number> {
-        console.debug("Getting CirrusSearch total");
+    async totalHits(): Promise<string> {
+        console.debug('Getting CirrusSearch total');
 
         if (!this.term.string) {
-            console.debug("Empty term string, returning 0.");
-            return 0;
+            console.debug("Empty term string, returning 'N/A'.");
+            return 'N/A';
         }
 
-        const baseUrl = "https://www.wikidata.org/w/api.php";
-        const params = {
-            action: "query",
-            format: "json",
-            list: "search",
-            formatversion: "2",
-            srsearch: this.cirrussearchString,
-            srlimit: "1",
-            srprop: "size",
-        };
+        const backendUrl = `${backendConfig.baseUrl}${backendConfig.cirrusSearch}`;
+        const params = { srsearch: this.cirrussearchString };
 
         try {
-            const response = await axios.get(baseUrl, { params });
+            const response = await axios.get(backendUrl, { params });
             const totalHits = response.data?.query?.searchinfo?.totalhits || 0;
             console.debug(`CirrusSearch total: ${totalHits}`);
-            return totalHits;
+            return totalHits.toString();
         } catch (error) {
-            console.error(`Unable to fetch data: ${error}`);
-            return 0;
+            console.error(`Unable to fetch data from backend: ${error}`);
+            return 'Error';
         }
     }
 
     get url(): string {
         console.debug('CirrusSearch:url: running');
         const searchString = this.cirrussearchString;
-        console.debug("CirrusSearch String:", searchString);
-    
+        console.debug('CirrusSearch String:', searchString);
+
         if (!searchString) {
-            console.error("cirrussearchString is undefined or empty!");
-            return "";
+            console.error('cirrussearchString is undefined or empty!');
+            return '';
         }
-    
+
         const url = `https://www.wikidata.org/w/index.php?search=${encodeURIComponent(searchString)}&title=Special%3ASearch&profile=advanced&fulltext=1&ns0=1`;
-        console.debug("Generated CirrusSearch URL:", url);
+        console.debug('Generated CirrusSearch URL:', url);
         return url;
     }
 }
