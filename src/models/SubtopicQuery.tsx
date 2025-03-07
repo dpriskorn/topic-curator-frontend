@@ -14,19 +14,24 @@ export class SubtopicQuery extends Query {
 
     get wdqsQueryString(): string {
         return `
-        PREFIX wd: <http://www.wikidata.org/entity/>
-        PREFIX wdt: <http://www.wikidata.org/prop/direct/>
-        PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-        PREFIX schema: <http://schema.org/>
+    PREFIX wd: <http://www.wikidata.org/entity/>
+    PREFIX wdt: <http://www.wikidata.org/prop/direct/>
+    PREFIX wikibase: <http://wikiba.se/ontology#>
+    PREFIX bd: <http://www.bigdata.com/rdf#>
 
-        SELECT ?item ?itemLabel ?itemDescription
-        WHERE {
-          ?item wdt:P279 wd:${this.item.qid}.
-          OPTIONAL { ?item rdfs:label ?itemLabel. FILTER(LANG(?itemLabel) = "${this.item.lang}") }
-          OPTIONAL { ?item schema:description ?itemDescription. FILTER(LANG(?itemDescription) = "${this.item.lang}") }
-        }
-        `;
+    SELECT ?item ?itemLabel ?itemDescription
+    WHERE {
+      ?item wdt:P279 wd:${this.item.qid}.
+
+      SERVICE wikibase:label {
+        bd:serviceParam wikibase:language "${this.item.lang}".
+        ?item rdfs:label ?itemLabel.
+        ?item schema:description ?itemDescription.
+      }
     }
+    `;
+    }
+
     protected async runAndParseResults(): Promise<undefined> {
         console.debug('runAndParseResults: running');
         const items: SubtopicItem[] = [];
