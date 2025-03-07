@@ -24,7 +24,7 @@ export class SubtopicQuery extends Query {
       ?item wdt:P279 wd:${this.item.qid}.
 
       SERVICE wikibase:label {
-        bd:serviceParam wikibase:language "${this.item.lang}".
+        bd:serviceParam wikibase:language "${this.item.lang}, mul".
         ?item rdfs:label ?itemLabel.
         ?item schema:description ?itemDescription.
       }
