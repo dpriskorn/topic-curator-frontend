@@ -13,7 +13,7 @@ const NavbarComponent = () => {
                 Skip to main content
             </a>
             <Navbar expanded={expanded} expand="md" bg="dark" variant="dark">
-                <Container>
+                <Container fluid>
                     <Navbar.Brand href="/">Wikidata Topic Curator</Navbar.Brand>
                     <Navbar.Toggle
                         aria-controls="navbarSupportedContent"
