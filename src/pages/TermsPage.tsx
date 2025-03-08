@@ -81,91 +81,93 @@ const TermsComponent = () => {
     };
 
     return (
-        <main className="container mb-3">
+        <>
             <NavbarComponent />
-            {fetchError && (
-                <p className="alert alert-danger">Error: {fetchError}</p>
-            )}
+            <main className="container mt-3">
+                {fetchError && (
+                    <p className="alert alert-danger">Error: {fetchError}</p>
+                )}
 
-            <div className="container">
-                <form action="/results" method="get">
-                    <input type="hidden" name="qid" value={qid} />
-                    <input type="hidden" name="lang" value={lang} />
-                    <input type="hidden" name="subgraph" value={subgraph} />
+                <div className="container">
+                    <form action="/results" method="get">
+                        <input type="hidden" name="qid" value={qid} />
+                        <input type="hidden" name="lang" value={lang} />
+                        <input type="hidden" name="subgraph" value={subgraph} />
 
-                    <h5>
-                        <strong>Term list</strong>
-                    </h5>
-                    {showError && (
-                        <p className="alert alert-danger">
-                            At least one term is required.
-                        </p>
-                    )}
+                        <h5>
+                            <strong>Term list</strong>
+                        </h5>
+                        {showError && (
+                            <p className="alert alert-danger">
+                                At least one term is required.
+                            </p>
+                        )}
 
-                    <div className="row">
-                        <table className="table-md table-bordered table-striped ">
-                            <thead>
-                                <tr>
-                                    <th scope="col" className="col-1">
-                                        Check
-                                    </th>
-                                    <th scope="col" className="col-1">
-                                        Source
-                                    </th>
-                                    <th scope="col" className="col-10">
-                                        Term
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {terms.map((term, index) => (
-                                    <tr key={index}>
-                                        <td>
-                                            <input
-                                                type="checkbox"
-                                                name="terms"
-                                                value={term.string}
-                                                defaultChecked={
-                                                    term.string.length >
-                                                    TERM_CHARACTER_CHECK_LIMIT
-                                                }
-                                            />
-                                        </td>
-                                        <td>
-                                            <span className="source">
-                                                {term.source}
-                                            </span>
-                                        </td>
-                                        <td>{term.string}</td>
+                        <div className="row">
+                            <table className="table-md table-bordered table-striped ">
+                                <thead>
+                                    <tr>
+                                        <th scope="col" className="col-1">
+                                            Check
+                                        </th>
+                                        <th scope="col" className="col-1">
+                                            Source
+                                        </th>
+                                        <th scope="col" className="col-10">
+                                            Term
+                                        </th>
                                     </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                        <input
-                            type="text"
-                            className="form-control"
-                            placeholder="Add term to list"
-                            value={newTerm}
-                            onChange={(e) => setNewTerm(e.target.value)}
-                        />
-                        <button
-                            type="button"
-                            onClick={addTerm}
-                            className="btn btn-secondary btn-sm me-2"
-                        >
-                            Add term
-                        </button>
-                        <button
-                            type="submit"
-                            className="btn btn-primary btn-sm"
-                        >
-                            Fetch matches
-                        </button>
-                    </div>
-                </form>
-            </div>
-            <Footer />
-        </main>
+                                </thead>
+                                <tbody>
+                                    {terms.map((term, index) => (
+                                        <tr key={index}>
+                                            <td>
+                                                <input
+                                                    type="checkbox"
+                                                    name="terms"
+                                                    value={term.string}
+                                                    defaultChecked={
+                                                        term.string.length >
+                                                        TERM_CHARACTER_CHECK_LIMIT
+                                                    }
+                                                />
+                                            </td>
+                                            <td>
+                                                <span className="source">
+                                                    {term.source}
+                                                </span>
+                                            </td>
+                                            <td>{term.string}</td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                            <input
+                                type="text"
+                                className="form-control"
+                                placeholder="Add term to list"
+                                value={newTerm}
+                                onChange={(e) => setNewTerm(e.target.value)}
+                            />
+                            <button
+                                type="button"
+                                onClick={addTerm}
+                                className="btn btn-secondary btn-sm me-2"
+                            >
+                                Add term
+                            </button>
+                            <button
+                                type="submit"
+                                className="btn btn-primary btn-sm"
+                            >
+                                Fetch matches
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                <Footer />
+            </main>
+        </>
     );
 };
 

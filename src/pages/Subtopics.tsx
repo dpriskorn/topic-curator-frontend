@@ -97,124 +97,127 @@ const Subtopics = () => {
     };
 
     return (
-        <main className="container mt-4">
+        <>
             <NavbarComponent />
-            <h2>
-                Subtopics for{' '}
-                {label ? (
-                    <a href={`https://www.wikidata.org/wiki/${qid}`}>{label}</a>
-                ) : (
-                    <span>Loading...</span>
+            <main className="container mt-3">
+                <NavbarComponent />
+                <h2>
+                    Subtopics for{' '}
+                    {label ? (
+                        <a href={`https://www.wikidata.org/wiki/${qid}`}>{label}</a>
+                    ) : (
+                        <span>Loading...</span>
+                    )}
+                </h2>
+                {qid && <ItemDetails item={new Item(qid, lang)} />}
+
+                {loading && (
+                    <div className="alert alert-info">Loading subtopics...</div>
                 )}
-            </h2>
-            {qid && <ItemDetails item={new Item(qid, lang)} />}
+                {error && <div className="alert alert-danger">{error}</div>}
 
-            {loading && (
-                <div className="alert alert-info">Loading subtopics...</div>
-            )}
-            {error && <div className="alert alert-danger">{error}</div>}
-
-            {subtopics.length > 0 && (
-                <table className="table table-bordered">
-                    <thead>
-                        <tr>
-                            <th>#</th>
-                            <th>Subtopic</th>
-                            <th>Description</th>
-                            <th>CirrusSearch Matches</th>
-                            <th>Matched</th>
-                            <th>Link</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {subtopics.map((subtopic: any, index: number) => (
-                            <tr key={subtopic.qid}>
-                                <td>{index + 1}</td>
-                                <td>
-                                    <a
-                                        href={generateUrl(subtopic.qid)}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                    >
-                                        {subtopic.label}
-                                    </a>
-                                </td>
-                                <td>{subtopic.description}</td>
-                                <td>
-                                    {subtopic.label ? (
-                                        <CirrusSearchFetcher
-                                            cirrusSearch={
-                                                new CirrusSearch(
-                                                    new Item(subtopic.qid),
-                                                    new Term(
-                                                        subtopic.label,
-                                                        TermSource.USER,
-                                                    ),
-                                                )
+                {subtopics.length > 0 && (
+                    <table className="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Subtopic</th>
+                                <th>Description</th>
+                                <th>CirrusSearch Matches</th>
+                                <th>Matched</th>
+                                <th>Link</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {subtopics.map((subtopic: any, index: number) => (
+                                <tr key={subtopic.qid}>
+                                    <td>{index + 1}</td>
+                                    <td>
+                                        <a
+                                            href={generateUrl(subtopic.qid)}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                        >
+                                            {subtopic.label}
+                                        </a>
+                                    </td>
+                                    <td>{subtopic.description}</td>
+                                    <td>
+                                        {subtopic.label ? (
+                                            <CirrusSearchFetcher
+                                                cirrusSearch={
+                                                    new CirrusSearch(
+                                                        new Item(subtopic.qid),
+                                                        new Term(
+                                                            subtopic.label,
+                                                            TermSource.USER,
+                                                        ),
+                                                    )
+                                                }
+                                            />
+                                        ) : (
+                                            <span>Loading...</span>
+                                        )}
+                                    </td>
+                                    <td>
+                                        <input
+                                            type="checkbox"
+                                            checked={checkedRows[index]}
+                                            onChange={() =>
+                                                handleCheckboxChange(index)
                                             }
                                         />
-                                    ) : (
-                                        <span>Loading...</span>
-                                    )}
-                                </td>
-                                <td>
-                                    <input
-                                        type="checkbox"
-                                        checked={checkedRows[index]}
-                                        onChange={() =>
-                                            handleCheckboxChange(index)
-                                        }
-                                    />
-                                </td>
-                                <td>
-                                    <a
-                                        target="_blank"
-                                        href={generateSubtopicLink(
-                                            subtopic.qid,
-                                            subtopic.label,
-                                        )}
-                                    >
-                                        Match
-                                    </a>
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-            )}
+                                    </td>
+                                    <td>
+                                        <a
+                                            target="_blank"
+                                            href={generateSubtopicLink(
+                                                subtopic.qid,
+                                                subtopic.label,
+                                            )}
+                                        >
+                                            Match
+                                        </a>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                )}
 
-            {subtopics.length > 0 && (
-                <div className="mt-3">
-                    <input
-                        type="checkbox"
-                        checked={allChecked}
-                        onChange={handleCheckAll}
-                    />{' '}
-                    Check All
-                    <p className="text-warning">
-                        Please match all the subtopics individually before
-                        proceeding.
-                    </p>
-                    <button
-                        className="btn btn-primary mt-3 w-100"
-                        onClick={() => {
-                            if (!allChecked) return;
-                            let redirectUrl = `/terms?qid=${encodeURIComponent(qid ?? '')}&label=${encodeURIComponent(label ?? '')}`;
-                            if (lang !== 'en')
-                                redirectUrl += `&lang=${encodeURIComponent(lang)}`;
-                            if (subgraph !== 'scientific_articles')
-                                redirectUrl += `&subgraph=${encodeURIComponent(subgraph)}`;
+                {subtopics.length > 0 && (
+                    <div className="mt-3">
+                        <input
+                            type="checkbox"
+                            checked={allChecked}
+                            onChange={handleCheckAll}
+                        />{' '}
+                        Check All
+                        <p className="text-warning">
+                            Please match all the subtopics individually before
+                            proceeding.
+                        </p>
+                        <button
+                            className="btn btn-primary mt-3 w-100"
+                            onClick={() => {
+                                if (!allChecked) return;
+                                let redirectUrl = `/terms?qid=${encodeURIComponent(qid ?? '')}&label=${encodeURIComponent(label ?? '')}`;
+                                if (lang !== 'en')
+                                    redirectUrl += `&lang=${encodeURIComponent(lang)}`;
+                                if (subgraph !== 'scientific_articles')
+                                    redirectUrl += `&subgraph=${encodeURIComponent(subgraph)}`;
 
-                            navigate(redirectUrl);
-                        }}
-                        disabled={!allChecked}
-                    >
-                        Match {label ?? 'Topic'}
-                    </button>{' '}
-                </div>
-            )}
-            <Footer />
-        </main>
+                                navigate(redirectUrl);
+                            }}
+                            disabled={!allChecked}
+                        >
+                            Match {label ?? 'Topic'}
+                        </button>{' '}
+                    </div>
+                )}
+                <Footer />
+            </main>
+        </>
     );
 };
 

@@ -103,34 +103,39 @@ const Results = () => {
     }, [qid, lang, subgraph, terms]); // Using memoized `terms` prevents infinite re-renders
 
     return (
-        <main className="container mt-3">
+        <>
             <NavbarComponent />
-            <h5>
-                <strong>{terms[0]}</strong>
-            </h5>
-            {qid && <ItemDetails item={new Item(qid, lang)} />}
-            <h6>
-                <strong>CirrusSearch queries</strong>
-            </h6>
-            <p>
-                Language code: {lang} | Subgraph: {subgraph}
-            </p>
-
-            {loading && <p className="alert alert-info">Fetching results...</p>}
-            {error && <p className="alert alert-danger">Error: {error}</p>}
-
-            {!loading && !error && queries.length > 0 && (
-                <QueryTable queries={queries} />
-            )}
-            <p>Total deduplicated results: {results.length}</p>
-            <h6>
-                <strong>Results</strong>
-            </h6>
-            {!loading && !error && results.length > 0 && qid && (
-                <ResultsTable results={results} item={new Item(qid, lang)} />
-            )}
-            <Footer />
-        </main>
+            <main className="container mt-3">
+                <h5>
+                    <strong>{terms[0]}</strong>
+                </h5>
+                {qid && <ItemDetails item={new Item(qid, lang)} />}
+                <h6>
+                    <strong>CirrusSearch queries</strong>
+                </h6>
+                <p>
+                    Language code: {lang} | Subgraph: {subgraph}
+                </p>
+                {loading && (
+                    <p className="alert alert-info">Fetching results...</p>
+                )}
+                {error && <p className="alert alert-danger">Error: {error}</p>}
+                {!loading && !error && queries.length > 0 && (
+                    <QueryTable queries={queries} />
+                )}
+                <p>Total deduplicated results: {results.length}</p>
+                <h6>
+                    <strong>Results</strong>
+                </h6>
+                {!loading && !error && results.length > 0 && qid && (
+                    <ResultsTable
+                        results={results}
+                        item={new Item(qid, lang)}
+                    />
+                )}
+                <Footer />
+            </main>
+        </>
     );
 };
 
