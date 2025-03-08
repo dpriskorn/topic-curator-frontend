@@ -1,21 +1,25 @@
 import React, { useState } from 'react';
 import { ResultItem } from '../models/ResultItem';
-import { Item } from '../models/Item'; // Ensure this import matches your project structure
+import { Item } from '../models/Item';
+import JournalTable from './JournalTable';
 
 interface ResultsTableProps {
     results: ResultItem[];
-    item: Item; // The main subject item
+    item: Item;
 }
 
 const ResultsTable: React.FC<ResultsTableProps> = ({ results, item }) => {
     const [selectedQIDs, setSelectedQIDs] = useState<string[]>([]);
     const [selectAll, setSelectAll] = useState<boolean>(false);
+    const [selectAllByJournal, setSelectAllByJournal] = useState<
+        Record<string, boolean>
+    >({});
 
     const handleCheckboxChange = (qid: string) => {
-        setSelectedQIDs((prevSelected) =>
-            prevSelected.includes(qid)
-                ? prevSelected.filter((id) => id !== qid)
-                : [...prevSelected, qid],
+        setSelectedQIDs((prev) =>
+            prev.includes(qid)
+                ? prev.filter((id) => id !== qid)
+                : [...prev, qid],
         );
     };
 
@@ -26,6 +30,24 @@ const ResultsTable: React.FC<ResultsTableProps> = ({ results, item }) => {
             setSelectedQIDs(results.map((item) => item.qid)); // Check all
         }
         setSelectAll(!selectAll);
+    };
+
+    const handleJournalSelectAll = (
+        journal: string,
+        journalResults: ResultItem[],
+    ) => {
+        const journalQIDs = journalResults.map((item) => item.qid);
+        if (selectAllByJournal[journal]) {
+            setSelectedQIDs((prev) =>
+                prev.filter((qid) => !journalQIDs.includes(qid)),
+            );
+        } else {
+            setSelectedQIDs((prev) => [...new Set([...prev, ...journalQIDs])]);
+        }
+        setSelectAllByJournal((prev) => ({
+            ...prev,
+            [journal]: !selectAllByJournal[journal],
+        }));
     };
 
     const generateQsCommands = (
@@ -47,76 +69,42 @@ const ResultsTable: React.FC<ResultsTableProps> = ({ results, item }) => {
 
         const commands = generateQsCommands(item.qid, selectedQIDs);
         const baseUrl = 'https://quickstatements.toolforge.org';
-        const endpoint = `${baseUrl}/#/v1=`;
-        const encodedCommands = encodeURIComponent(commands);
-        const qsUrl = `${endpoint}${encodedCommands}`;
+        const qsUrl = `${baseUrl}/#/v1=${encodeURIComponent(commands)}`;
 
-        window.open(qsUrl, '_blank'); // Open QuickStatements in a new tab
+        window.open(qsUrl, '_blank');
     };
 
     if (results.length === 0) {
         return <p className="alert alert-warning">No results found.</p>;
     }
 
+    // Group results by journal label
+    const groupedResults = results.reduce(
+        (acc, result) => {
+            const journalLabel = result.publicationLabel || 'Unknown Journal';
+            if (!acc[journalLabel]) {
+                acc[journalLabel] = [];
+            }
+            acc[journalLabel].push(result);
+            return acc;
+        },
+        {} as Record<string, ResultItem[]>,
+    );
+
     return (
         <form onSubmit={handleSubmit}>
-            <table className="table table-bordered table-striped">
-                <thead>
-                    <tr>
-                        <th className="col-0">#</th>
-                        <th className="col-0">Select</th>
-                        <th className="col-6">Label</th>
-                        <th className="col-2">Instance Of</th>
-                        <th className="col-4">Publication</th>
-                        <th className="col-0">DOI</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {results.map((item, index) => (
-                        <tr key={index}>
-                            <td>{index + 1}</td>
-                            <td>
-                                <input
-                                    className="form-check-input"
-                                    type="checkbox"
-                                    id={`checkbox-${item.qid}`}
-                                    name="selected_qids[]"
-                                    value={item.qid}
-                                    checked={selectedQIDs.includes(item.qid)}
-                                    onChange={() =>
-                                        handleCheckboxChange(item.qid)
-                                    }
-                                />
-                            </td>
-                            <td>
-                                <a
-                                    href={item.qidUrl}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    dangerouslySetInnerHTML={{
-                                        __html: item.highlightedItemLabel,
-                                    }}
-                                ></a>
-                            </td>
-                            <td>{item.instanceOfLabel}</td>
-                            <td>{item.publicationLabel}</td>
-                            <td>
-                                {item.doi ? (
-                                    <a
-                                        href={item.doiUrl}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                    >
-                                        Link
-                                    </a>
-                                ) : (
-                                    'N/A'
-                                )}
-                            </td>
-                        </tr>
-                    ))}
-                </tbody>
-            </table>
+            {Object.entries(groupedResults).map(([journal, journalResults]) => (
+                <JournalTable
+                    key={journal}
+                    journal={journal}
+                    journalResults={journalResults}
+                    selectedQIDs={selectedQIDs}
+                    onSelectAll={() =>
+                        handleJournalSelectAll(journal, journalResults)
+                    }
+                    onCheckboxChange={handleCheckboxChange}
+                />
+            ))}
 
             {/* "Check All" Checkbox & Warning Message */}
             <div className="form-check mt-3">
