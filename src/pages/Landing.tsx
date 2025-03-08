@@ -1,16 +1,16 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import Footer from '../components/layout/Footer';
 import NavbarComponent from '../components/layout/Navbar';
 
 const LandingPage = () => {
-    const [searchParams] = useSearchParams();
+    //const [searchParams] = useSearchParams();
     const navigate = useNavigate();
 
     // Extract query parameters
-    const qid = searchParams.get('qid');
-    const lang = searchParams.get('lang') || 'en';
-    const subgraph = searchParams.get('subgraph') || 'scientific_articles';
+    //const qid = searchParams.get('qid');
+    //const lang = searchParams.get('lang') || 'en';
+    //const subgraph = searchParams.get('subgraph') || 'scientific_articles';
 
     const [formData, setFormData] = useState({
         qid: '',
