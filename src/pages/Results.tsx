@@ -122,7 +122,7 @@ const Results = () => {
             {!loading && !error && queries.length > 0 && (
                 <QueryTable queries={queries} />
             )}
-            <p>Total deduplicated results listed below: {results.length}</p>
+            <p>Total deduplicated results: {results.length}</p>
             <h6>
                 <strong>Results</strong>
             </h6>

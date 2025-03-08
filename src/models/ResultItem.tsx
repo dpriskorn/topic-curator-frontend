@@ -14,11 +14,11 @@ class ResultItem extends Item {
 
     constructor({
         qid,
-        itemLabel = "No label found",
-        instanceOfLabel = "No label found",
-        publicationLabel = "No label found",
-        doi = "",
-        rawFullResources = "",
+        itemLabel = 'No label found',
+        instanceOfLabel = 'No label found',
+        publicationLabel = 'No label found',
+        doi = '',
+        rawFullResources = '',
         term,
     }: {
         qid: string;
@@ -36,20 +36,31 @@ class ResultItem extends Item {
         this.doi = doi;
         this.rawFullResources = rawFullResources;
         this.term = term;
-        this.cleanedItemLabel = "";
+        this.cleanedItemLabel = '';
     }
 
     get highlightedItemLabel(): string {
-        if (this.itemLabel !== "No label found") {
+        if (this.itemLabel !== 'No label found') {
             // Escape special characters in term.string to avoid regex errors
-            const escapedTerm = this.term.string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            const escapedTerm = this.term.string.replace(
+                /[.*+?^${}()|[\]\\]/g,
+                '\\$&',
+            );
             const highlightStr = new RegExp(`\\b${escapedTerm}\\b`, 'gi');
-            
-            return this.itemLabel.replace(highlightStr, (match) => `<mark>${match}</mark>`);
+
+            return this.itemLabel.replace(
+                highlightStr,
+                (match) => `<mark>${match}</mark>`,
+            );
         } else {
             return this.itemLabel;
         }
     }
+
+    get highlightSuccess(): boolean {
+        return this.highlightedItemLabel.includes('<mark>');
+    }
+
     /**
      * Returns the DOI URL if the QID corresponds to a DOI entity.
      */

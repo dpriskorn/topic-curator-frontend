@@ -27,7 +27,7 @@ const ResultsTable: React.FC<ResultsTableProps> = ({ results, item }) => {
         if (selectAll) {
             setSelectedQIDs([]); // Uncheck all
         } else {
-            setSelectedQIDs(results.map((item) => item.qid)); // Check all
+            setSelectedQIDs(filteredResults.map((item) => item.qid)); // Check all
         }
         setSelectAll(!selectAll);
     };
@@ -74,12 +74,17 @@ const ResultsTable: React.FC<ResultsTableProps> = ({ results, item }) => {
         window.open(qsUrl, '_blank');
     };
 
-    if (results.length === 0) {
-        return <p className="alert alert-warning">No results found.</p>;
+    // Filter only items where highlightSuccess is true
+    const filteredResults = results.filter((result) => result.highlightSuccess);
+
+    if (filteredResults.length === 0) {
+        return (
+            <p className="alert alert-warning">No highlighted results found.</p>
+        );
     }
 
-    // Group results by journal label
-    const groupedResults = results.reduce(
+    // Group filtered results by journal label
+    const groupedResults = filteredResults.reduce(
         (acc, result) => {
             const journalLabel = result.publicationLabel || 'Unknown Journal';
             if (!acc[journalLabel]) {
@@ -92,42 +97,49 @@ const ResultsTable: React.FC<ResultsTableProps> = ({ results, item }) => {
     );
 
     return (
-        <form onSubmit={handleSubmit}>
-            {Object.entries(groupedResults).map(([journal, journalResults]) => (
-                <JournalTable
-                    key={journal}
-                    journal={journal}
-                    journalResults={journalResults}
-                    selectedQIDs={selectedQIDs}
-                    onSelectAll={() =>
-                        handleJournalSelectAll(journal, journalResults)
-                    }
-                    onCheckboxChange={handleCheckboxChange}
-                />
-            ))}
-
-            {/* "Check All" Checkbox & Warning Message */}
-            <div className="form-check mt-3">
-                <input
-                    className="form-check-input"
-                    type="checkbox"
-                    id="checkAll"
-                    checked={selectAll}
-                    onChange={handleSelectAllChange}
-                />
-                <label className="form-check-label ms-2" htmlFor="checkAll">
-                    Select All
-                </label>
-            </div>
-            <p className="text-warning mt-1">
-                ⚠️ Please manually verify that the topic makes sense on all
-                items. You are responsible for your edits.
+        <div className="row">
+            <p>
+                Total highlighted results listed below: {filteredResults.length}
             </p>
+            <form onSubmit={handleSubmit}>
+                {Object.entries(groupedResults).map(
+                    ([journal, journalResults]) => (
+                        <JournalTable
+                            key={journal}
+                            journal={journal}
+                            journalResults={journalResults}
+                            selectedQIDs={selectedQIDs}
+                            onSelectAll={() =>
+                                handleJournalSelectAll(journal, journalResults)
+                            }
+                            onCheckboxChange={handleCheckboxChange}
+                        />
+                    ),
+                )}
 
-            <button type="submit" className="btn btn-primary mt-3 w-100">
-                Send to QuickStatements
-            </button>
-        </form>
+                {/* "Check All" Checkbox & Warning Message */}
+                <div className="form-check mt-3">
+                    <input
+                        className="form-check-input"
+                        type="checkbox"
+                        id="checkAll"
+                        checked={selectAll}
+                        onChange={handleSelectAllChange}
+                    />
+                    <label className="form-check-label ms-2" htmlFor="checkAll">
+                        Select All
+                    </label>
+                </div>
+                <p className="text-warning mt-1">
+                    ⚠️ Please manually verify that the topic makes sense on all
+                    items. You are responsible for your edits.
+                </p>
+
+                <button type="submit" className="btn btn-primary mt-3 w-100">
+                    Send to QuickStatements
+                </button>
+            </form>
+        </div>
     );
 };
 
