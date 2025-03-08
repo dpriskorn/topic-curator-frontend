@@ -105,9 +105,13 @@ const Results = () => {
     return (
         <main className="container mt-3">
             <NavbarComponent />
-            <h1>Working on: {terms[0]}</h1>
+            <h5>
+                <strong>{terms[0]}</strong>
+            </h5>
             {qid && <ItemDetails item={new Item(qid, lang)} />}
-            <h2>CirrusSearch queries</h2>
+            <h6>
+                <strong>CirrusSearch queries</strong>
+            </h6>
             <p>
                 Language code: {lang} | Subgraph: {subgraph}
             </p>
@@ -119,7 +123,9 @@ const Results = () => {
                 <QueryTable queries={queries} />
             )}
             <p>Total deduplicated results listed below: {results.length}</p>
-            <h2>Results</h2>
+            <h6>
+                <strong>Results</strong>
+            </h6>
             {!loading && !error && results.length > 0 && qid && (
                 <ResultsTable results={results} item={new Item(qid, lang)} />
             )}

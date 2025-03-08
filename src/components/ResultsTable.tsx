@@ -60,15 +60,15 @@ const ResultsTable: React.FC<ResultsTableProps> = ({ results, item }) => {
 
     return (
         <form onSubmit={handleSubmit}>
-            <table className="table table-bordered">
+            <table className="table table-bordered table-striped">
                 <thead>
                     <tr>
-                        <th>#</th>
-                        <th>Select</th>
-                        <th>Label</th>
-                        <th>Instance Of</th>
-                        <th>Publication</th>
-                        <th>DOI</th>
+                        <th className="col-0">#</th>
+                        <th className="col-0">Select</th>
+                        <th className="col-6">Label</th>
+                        <th className="col-2">Instance Of</th>
+                        <th className="col-4">Publication</th>
+                        <th className="col-0">DOI</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -107,7 +107,7 @@ const ResultsTable: React.FC<ResultsTableProps> = ({ results, item }) => {
                                         target="_blank"
                                         rel="noopener noreferrer"
                                     >
-                                        {item.doi}
+                                        Link
                                     </a>
                                 ) : (
                                     'N/A'
@@ -136,7 +136,7 @@ const ResultsTable: React.FC<ResultsTableProps> = ({ results, item }) => {
                 items. You are responsible for your edits.
             </p>
 
-            <button type="submit" className="btn btn-primary mt-3">
+            <button type="submit" className="btn btn-primary mt-3 w-100">
                 Send to QuickStatements
             </button>
         </form>

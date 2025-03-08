@@ -156,7 +156,7 @@ const LandingPage = () => {
 
                     <button
                         type="submit"
-                        className="btn btn-primary mt-3"
+                        className="btn btn-primary mt-3 w-100"
                         onClick={handleNext}
                     >
                         Next

@@ -87,13 +87,15 @@ const TermsComponent = () => {
                 <p className="alert alert-danger">Error: {fetchError}</p>
             )}
 
-            <div className="row">
+            <div className="container">
                 <form action="/results" method="get">
                     <input type="hidden" name="qid" value={qid} />
                     <input type="hidden" name="lang" value={lang} />
                     <input type="hidden" name="subgraph" value={subgraph} />
 
-                    <h3>Term list</h3>
+                    <h5>
+                        <strong>Term list</strong>
+                    </h5>
                     {showError && (
                         <p className="alert alert-danger">
                             At least one term is required.
@@ -101,12 +103,18 @@ const TermsComponent = () => {
                     )}
 
                     <div className="row">
-                        <table className="table table-bordered">
+                        <table className="table-md table-bordered table-striped ">
                             <thead>
                                 <tr>
-                                    <th scope="col">Check</th>
-                                    <th scope="col">Term</th>
-                                    <th scope="col">Source</th>
+                                    <th scope="col" className="col-1">
+                                        Check
+                                    </th>
+                                    <th scope="col" className="col-1">
+                                        Source
+                                    </th>
+                                    <th scope="col" className="col-10">
+                                        Term
+                                    </th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -123,12 +131,12 @@ const TermsComponent = () => {
                                                 }
                                             />
                                         </td>
-                                        <td>{term.string}</td>
                                         <td>
                                             <span className="source">
                                                 {term.source}
                                             </span>
                                         </td>
+                                        <td>{term.string}</td>
                                     </tr>
                                 ))}
                             </tbody>

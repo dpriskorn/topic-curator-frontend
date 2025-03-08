@@ -196,7 +196,7 @@ const Subtopics = () => {
                         proceeding.
                     </p>
                     <button
-                        className="btn btn-primary mt-2"
+                        className="btn btn-primary mt-3 w-100"
                         onClick={() => {
                             if (!allChecked) return;
                             let redirectUrl = `/terms?qid=${encodeURIComponent(qid ?? '')}&label=${encodeURIComponent(label ?? '')}`;
