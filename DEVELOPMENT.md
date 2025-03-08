@@ -49,6 +49,12 @@ The logs are here
 $ toolforge webservice buildservice logs -f
 ```
 
+## Update
+Commit to master, then:
+```
+$ toolforge build start https://github.com/dpriskorn/topic-creator-frontend.git --envvar USE_NPM_INSTALL
+$ toolforge webservice --mount=none buildservice restart
+```
 
 ### Background:
 https://devcenter.heroku.com/articles/buildpacks
