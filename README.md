@@ -5,6 +5,12 @@ This a webapp to help wikimedians curate groups of items on Wikidata with topics
 This project contains a rewrite mostly done by chatbot. 
 It has all the features of the former flask app except user defined prefix/affix.
 
+Rewriting it had lots of benefits including:
+* up to 100x faster page load time
+* async in the browser is way nicer from the user prespective
+* easier to maintain not that there is very little backend code at all
+* I got to learn React :D 
+
 ## Features
 See the documentation.
 ## Documentation
