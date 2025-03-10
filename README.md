@@ -5,8 +5,14 @@ This a webapp to help wikimedians curate groups of items on Wikidata with topics
 This project contains a rewrite mostly done by chatbot. 
 It has all the features of the former flask app except user defined prefix/affix.
 
-## TODO
-See the issues.
+## Features
+See the documentation.
+## Documentation
+https://www.wikidata.org/wiki/Wikidata:Tools/Wikidata_Topic_Curator
+## Participating
+See the issues in Github. Feel free to open a new one or send a pull request. :)
+## License
+GPLv3+
 
 ## History
 * 2025 React + Vite rewrite done (3 weeks development time using ChatGPT 4o to convert and improve existing code)
@@ -24,3 +30,5 @@ Language                 Files     Lines   Blanks  Comments     Code Complexity
 TypeScript                  41      2195      267       132     1796        202
 ```
 
+## What I learned
+* Chatgpt 4o is very good at React and TyepScript but I had to wrestle it a bit to get good OOP code
