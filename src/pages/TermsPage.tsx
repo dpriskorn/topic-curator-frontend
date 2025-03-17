@@ -11,6 +11,7 @@ import NavbarComponent from '../components/layout/Navbar.tsx';
 const TermsPage = () => {
     const [searchParams] = useSearchParams();
     const qid = searchParams.get('qid') || 'N/A';
+    const labelParam = searchParams.get('label') || '';
     const lang = searchParams.get('lang') || 'en';
     const subgraph = searchParams.get('subgraph') || 'default';
 
@@ -62,7 +63,17 @@ const TermsPage = () => {
             }
         };
 
-        fetchLabel();
+        // Set label from params and fallback to fetching
+        if (labelParam === '') {
+            fetchLabel();
+        } else {
+            setLabel(labelParam);
+            document.title = `Results: ${label}`;
+            termsManagerRef.current.addTerms([
+                new Term(labelParam, TermSource.LABEL),
+            ]);
+            setTerms([...termsManagerRef.current.getTerms()]);
+        }
         fetchAliases();
     }, [qid, lang]);
 
