@@ -33,7 +33,14 @@ const NavbarComponent = () => {
                                 target="_blank"
                                 rel="noopener noreferrer"
                             >
-                                Source Code
+                                Source code
+                            </Nav.Link>
+                            <Nav.Link
+                                href="https://github.com/dpriskorn/topic-creator-frontend/issues"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                            >
+                                Feedback
                             </Nav.Link>
                         </Nav>
                     </Navbar.Collapse>
