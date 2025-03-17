@@ -18,9 +18,9 @@ const JournalTable: React.FC<JournalTableProps> = ({
 }) => {
     return (
         <div className="mb-4">
-            <p>
+            <h3>
                 {journal}
-            </p>
+            </h3>
             <table className="table table-bordered table-striped">
                 <thead>
                     <tr>

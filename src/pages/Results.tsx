@@ -136,7 +136,7 @@ const Results = () => {
                 </h1>
                 {qid && <ItemDetails item={new Item(qid, lang)} />}
                 <h2>
-                    <strong>CirrusSearch queries</strong>
+                    CirrusSearch queries
                 </h2>
                 <p>
                     Language code: {lang} | Subgraph: {subgraph}
