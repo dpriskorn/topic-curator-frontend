@@ -17,6 +17,8 @@ import NavbarComponent from '../components/layout/Navbar';
 const Results = () => {
     const [searchParams] = useSearchParams();
     const qid = searchParams.get('qid');
+    const prefix = searchParams.get('prefix') || '';
+    const affix = searchParams.get('affix') || '';
     const lang = searchParams.get('lang') || 'en';
     const subgraph = searchParams.get('subgraph') || 'scientific_articles';
     const terms = useMemo(() => searchParams.getAll('terms'), [searchParams]); // Memoized
@@ -67,6 +69,8 @@ const Results = () => {
                         topicItem,
                         term,
                         subgraphInstance,
+                        prefix,
+                        affix
                     );
                     const query = new ResultQuery(limit, cirrussearch);
                     await query.runAndGetItems();
