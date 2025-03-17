@@ -100,15 +100,14 @@ const Subtopics = () => {
         <>
             <NavbarComponent />
             <main className="container mt-3">
-                <NavbarComponent />
-                <h2>
+                <h1>
                     Subtopics for{' '}
                     {label ? (
                         <a href={`https://www.wikidata.org/wiki/${qid}`}>{label}</a>
                     ) : (
                         <span>Loading...</span>
                     )}
-                </h2>
+                </h1>
                 {qid && <ItemDetails item={new Item(qid, lang)} />}
 
                 {loading && (
