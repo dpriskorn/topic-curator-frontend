@@ -17,6 +17,7 @@ import NavbarComponent from '../components/layout/Navbar';
 const Results = () => {
     const [searchParams] = useSearchParams();
     const qid = searchParams.get('qid');
+    const labelParam = searchParams.get('label') || '';
     const prefix = searchParams.get('prefix') || '';
     const affix = searchParams.get('affix') || '';
     const lang = searchParams.get('lang') || 'en';
@@ -27,6 +28,8 @@ const Results = () => {
     const [results, setResults] = useState<ResultItem[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [label, setLabel] = useState<string | null>(null);
+
 
     useEffect(() => {
         if (!qid || terms.length === 0) {
@@ -35,7 +38,18 @@ const Results = () => {
             setLoading(false);
             return;
         }
-        document.title = `Results: ${terms[0]}`;
+        document.title = `Results`;
+
+        const fetchLabel = async () => {
+            try {
+                const item = new Item(qid, lang);
+                const label = await item.fetchLabel();
+                setLabel(label);
+                document.title = `Results: ${label}`;
+            } catch (error) {
+                setError((error as Error).message);
+            }
+        };
 
         const fetchResults = async () => {
             try {
@@ -103,6 +117,13 @@ const Results = () => {
             }
         };
 
+        // Set label from params and fallback to fetching
+        if (labelParam === ''){   
+            fetchLabel();
+        } else {
+            setLabel(labelParam);
+            document.title = `Results: ${label}`;
+        }
         fetchResults();
     }, [qid, lang, subgraph, terms]); // Using memoized `terms` prevents infinite re-renders
 
@@ -110,13 +131,13 @@ const Results = () => {
         <>
             <NavbarComponent />
             <main className="container mt-3">
-                <h5>
-                    <strong>{terms[0]}</strong>
-                </h5>
+                <h1>
+                    {label}
+                </h1>
                 {qid && <ItemDetails item={new Item(qid, lang)} />}
-                <h6>
+                <h2>
                     <strong>CirrusSearch queries</strong>
-                </h6>
+                </h2>
                 <p>
                     Language code: {lang} | Subgraph: {subgraph}
                 </p>
@@ -128,9 +149,9 @@ const Results = () => {
                     <QueryTable queries={queries} />
                 )}
                 <p>Total deduplicated results: {results.length}</p>
-                <h6>
-                    <strong>Results</strong>
-                </h6>
+                <h2>
+                    Results
+                </h2>
                 {!loading && !error && results.length > 0 && qid && (
                     <ResultsTable
                         results={results}
