@@ -17,10 +17,10 @@ import NavbarComponent from '../components/layout/Navbar';
 const Results = () => {
     const [searchParams] = useSearchParams();
     const qid = searchParams.get('qid');
+    const lang = searchParams.get('lang');
     const labelParam = searchParams.get('label') || '';
     const prefix = searchParams.get('prefix') || '';
     const affix = searchParams.get('affix') || '';
-    const lang = searchParams.get('lang') || 'en';
     const subgraph = searchParams.get('subgraph') || 'scientific_articles';
     const terms = useMemo(() => searchParams.getAll('terms'), [searchParams]); // Memoized
 
@@ -32,8 +32,8 @@ const Results = () => {
 
 
     useEffect(() => {
-        if (!qid || terms.length === 0) {
-            console.warn('Missing required parameters:', { qid, terms });
+        if (!qid || !lang || terms.length === 0) {
+            console.warn('Missing required parameters:', { qid, lang, terms });
             setError('Missing required parameters');
             setLoading(false);
             return;
@@ -56,7 +56,7 @@ const Results = () => {
                 setLoading(true);
                 setError(null);
 
-                const topicItem = new Item(qid);
+                const topicItem = new Item(qid, lang);
                 const termsObject = new Terms(
                     terms.map((t) => new Term(t, TermSource.USER)),
                 );
@@ -134,7 +134,7 @@ const Results = () => {
                 <h1>
                     {label}
                 </h1>
-                {qid && <ItemDetails item={new Item(qid, lang)} />}
+                {qid && lang && <ItemDetails item={new Item(qid, lang)} />}
                 <h2>
                     CirrusSearch queries
                 </h2>
@@ -152,7 +152,7 @@ const Results = () => {
                 <h2>
                     Results
                 </h2>
-                {!loading && !error && results.length > 0 && qid && (
+                {!loading && !error && results.length > 0 && qid && lang && (
                     <ResultsTable
                         results={results}
                         item={new Item(qid, lang)}

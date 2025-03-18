@@ -6,7 +6,7 @@ class Item {
     public qid: string;
     public lang: string;
 
-    constructor(qid: string, lang: string = 'en') {
+    constructor(qid: string, lang: string) {
         // Remove "http://www.wikidata.org/entity/" if present
         qid = qid.replace(/^http:\/\/www\.wikidata\.org\/entity\//, '');
 
