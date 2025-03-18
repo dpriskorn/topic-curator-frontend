@@ -26,7 +26,7 @@ GPLv3+
 * 2022 Python terminal app ItemSubjector (months of development time)
 
 ## Statistics
-This is a 2k lines React app with 4 pages, 7 components and 10 models.
+This is a 2k lines React app with 5 pages, 8 components and 10 models.
 
 ```
 $ scc
