@@ -1,28 +1,27 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import Footer from '../components/layout/Footer';
 import NavbarComponent from '../components/layout/Navbar';
 
 const LandingPage = () => {
-    //const [searchParams] = useSearchParams();
+    const [searchParams] = useSearchParams();
     const navigate = useNavigate();
 
     // Extract query parameters
-    //const qid = searchParams.get('qid');
-    //const lang = searchParams.get('lang') || 'en';
-    //const subgraph = searchParams.get('subgraph') || 'scientific_articles';
+    const qidParam = searchParams.get('qid') || '';
+    const langParam = searchParams.get('lang') || 'en';
+    const subgraphParam = searchParams.get('subgraph') || 'scientific_articles';
 
     const [formData, setFormData] = useState({
-        qid: '',
-        lang: 'en',
-        subgraph: 'scientific_articles', // Default selected subgraph
+        qid: qidParam,
+        lang: langParam,
+        subgraph: subgraphParam,
     });
-    const [error, setError] = useState(''); // State for error messages
 
-    // Create a reference for the QID input field
+    const [error, setError] = useState('');
+
     const qidInputRef = useRef<HTMLInputElement>(null);
 
-    // Focus on the QID input field when the component loads
     useEffect(() => {
         document.title = 'Wikidata Topic Curator';
         if (qidInputRef.current) {
@@ -30,40 +29,43 @@ const LandingPage = () => {
         }
     }, []);
 
+    useEffect(() => {
+        setFormData({
+            qid: qidParam,
+            lang: langParam,
+            subgraph: subgraphParam,
+        });
+    }, [qidParam, langParam, subgraphParam]);
+
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value, type, checked } = e.target;
-        setFormData({
-            ...formData,
+        setFormData((prev) => ({
+            ...prev,
             [name]: type === 'checkbox' ? (checked ? value : '') : value,
-        });
-        // Clear error when user starts typing
+        }));
+
         if (name === 'qid' && error) {
             setError('');
         }
     };
 
-    const validateQid = (qid: string) => {
-        const qidPattern = /^Q\d+$/; // Regex to match "Q" followed by one or more digits
-        return qidPattern.test(qid);
-    };
+    const validateQid = (qid: string) => /^Q\d+$/.test(qid);
 
     const handleNext = (e: React.FormEvent) => {
         e.preventDefault();
 
-        // Validate qid
-        if (formData.qid.trim() === '') {
+        if (!formData.qid.trim()) {
             setError('A QID is required to proceed.');
             return;
         }
 
         if (!validateQid(formData.qid)) {
             setError(
-                'QID must start with a capital "Q" followed by numbers (e.g., Q123).',
+                'QID must start with "Q" followed by numbers (e.g., Q123).',
             );
             return;
         }
 
-        // Navigate to the Subtopics page with qid as a query param
         navigate(`/subtopics?qid=${encodeURIComponent(formData.qid)}`, {
             state: { qid: formData.qid },
         });
@@ -91,7 +93,7 @@ const LandingPage = () => {
                                     onChange={handleInputChange}
                                     placeholder="Q1949144"
                                     ref={qidInputRef}
-                                    title="This is the topic to curate. Items that already have a P921 statement with this value will be excluded by default."
+                                    title="This is the topic to curate."
                                     required
                                 />
                                 {error && (
@@ -122,47 +124,28 @@ const LandingPage = () => {
                         <dl className="row">
                             <dt className="col-sm">Choose Subgraph:</dt>
                             <dd className="col-sm">
-                                <label>
-                                    <input
-                                        type="checkbox"
-                                        name="subgraph"
-                                        value="scientific_journals"
-                                        checked={
-                                            formData.subgraph ===
-                                            'scientific_journals'
-                                        }
-                                        onChange={handleInputChange}
-                                    />{' '}
-                                    Scientific Journals
-                                </label>
-                                <br />
-                                <label>
-                                    <input
-                                        type="checkbox"
-                                        name="subgraph"
-                                        value="scientific_articles"
-                                        checked={
-                                            formData.subgraph ===
-                                            'scientific_articles'
-                                        }
-                                        onChange={handleInputChange}
-                                    />{' '}
-                                    Scientific Articles and Preprints
-                                </label>
-                                <br />
-                                <label>
-                                    <input
-                                        type="checkbox"
-                                        name="subgraph"
-                                        value="riksdagen_documents"
-                                        checked={
-                                            formData.subgraph ===
-                                            'riksdagen_documents'
-                                        }
-                                        onChange={handleInputChange}
-                                    />{' '}
-                                    Riksdagen Documents
-                                </label>
+                                {[
+                                    'scientific_journals',
+                                    'scientific_articles',
+                                    'riksdagen_documents',
+                                ].map((option) => (
+                                    <label key={option}>
+                                        <input
+                                            type="checkbox"
+                                            name="subgraph"
+                                            value={option}
+                                            checked={
+                                                formData.subgraph === option
+                                            }
+                                            onChange={handleInputChange}
+                                        />{' '}
+                                        {option
+                                            .replace('_', ' ')
+                                            .charAt(0)
+                                            .toUpperCase() +
+                                            option.replace('_', ' ').slice(1)}
+                                    </label>
+                                ))}
                             </dd>
                         </dl>
 
