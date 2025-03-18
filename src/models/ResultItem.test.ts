@@ -8,6 +8,7 @@ describe('ResultItem', () => {
         const term = new Term('test', TermSource.USER);
         const item = new ResultItem({
             qid: 'Q1',
+            lang: 'en',
             term,
         });
 
@@ -25,6 +26,7 @@ describe('ResultItem', () => {
         const term = new Term('science', TermSource.USER);
         const item = new ResultItem({
             qid: 'Q42',
+            lang: 'en',
             itemLabel: 'Quantum Science',
             instanceOfLabel: 'Concept',
             publicationLabel: 'Nature',
@@ -47,6 +49,7 @@ describe('ResultItem', () => {
         const term = new Term('Science', TermSource.USER);
         const item = new ResultItem({
             qid: 'Q42',
+            lang: 'en',
             itemLabel: 'Quantum Science and Technology',
             term,
         });
@@ -60,6 +63,7 @@ describe('ResultItem', () => {
         const term = new Term('Physics', TermSource.USER);
         const item = new ResultItem({
             qid: 'Q42',
+            lang: 'en',
             itemLabel: 'Quantum Science and Technology',
             term,
         });
@@ -73,6 +77,7 @@ describe('ResultItem', () => {
         const term = new Term('Science', TermSource.USER);
         const item = new ResultItem({
             qid: 'Q42',
+            lang: 'en',
             term,
         });
 

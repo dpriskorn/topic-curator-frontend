@@ -3,6 +3,7 @@ import { Term } from "./Term";
 
 class ResultItem extends Item {
     // qid is inherited
+    // lang is inherited
     itemLabel: string;
     instanceOfLabel: string;
     publicationLabel: string;
@@ -14,6 +15,7 @@ class ResultItem extends Item {
 
     constructor({
         qid,
+        lang,
         itemLabel = 'No label found',
         instanceOfLabel = 'No label found',
         publicationLabel = 'No label found',
@@ -22,6 +24,7 @@ class ResultItem extends Item {
         term,
     }: {
         qid: string;
+        lang: string;
         itemLabel?: string;
         instanceOfLabel?: string;
         publicationLabel?: string;
@@ -29,7 +32,7 @@ class ResultItem extends Item {
         rawFullResources?: string;
         term: Term;
     }) {
-        super(qid);
+        super(qid, lang);
         this.itemLabel = itemLabel;
         this.instanceOfLabel = instanceOfLabel;
         this.publicationLabel = publicationLabel;

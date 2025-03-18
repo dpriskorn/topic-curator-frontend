@@ -146,7 +146,7 @@ const Subtopics = () => {
                                             <CirrusSearchFetcher
                                                 cirrusSearch={
                                                     new CirrusSearch(
-                                                        new Item(subtopic.qid),
+                                                        new Item(subtopic.qid, lang),
                                                         new Term(
                                                             subtopic.label,
                                                             TermSource.USER,

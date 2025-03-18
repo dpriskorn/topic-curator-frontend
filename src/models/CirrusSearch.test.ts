@@ -16,7 +16,7 @@ describe("CirrusSearch", () => {
     let cirrusSearch: CirrusSearch;
 
     beforeEach(() => {
-        item = new Item("Q123");
+        item = new Item("Q123", 'en');
         term = new Term("Example Term", TermSource.USER);
         subgraph = Subgraph.SCIENTIFIC_ARTICLES;
         cirrusSearch = new CirrusSearch(item, term, subgraph);

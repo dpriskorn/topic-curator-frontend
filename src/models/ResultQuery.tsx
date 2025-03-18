@@ -37,6 +37,7 @@ export class ResultQuery extends Query {
         for (const itemJson of results.results.bindings) {
             const item = new ResultItem({
                 qid: itemJson.item?.value || '',
+                lang: this.cirrussearch.item.lang,
                 itemLabel: itemJson.itemLabel?.value || 'No label found',
                 instanceOfLabel:
                     itemJson.instance_ofLabel?.value || 'No label found',

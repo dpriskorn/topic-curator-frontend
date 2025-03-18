@@ -10,7 +10,7 @@ describe('Query', () => {
 
     beforeEach(() => {
         term = new Term('example term', TermSource.ALIAS);
-        cirrussearch = new CirrusSearch(new Item('Q123'), term);
+        cirrussearch = new CirrusSearch(new Item('Q123', 'en'), term);
         query = new ResultQuery(10, cirrussearch);
     });
 
