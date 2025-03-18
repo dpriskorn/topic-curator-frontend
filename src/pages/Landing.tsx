@@ -129,7 +129,7 @@ const LandingPage = () => {
                                     'scientific_articles',
                                     'riksdagen_documents',
                                 ].map((option) => (
-                                    <label key={option}>
+                                    <label className='m-1' key={option}>
                                         <input
                                             type="checkbox"
                                             name="subgraph"
