@@ -1,11 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
 import Footer from '../components/layout/Footer';
 import NavbarComponent from '../components/layout/Navbar';
 
 const LandingPage = () => {
     const [searchParams] = useSearchParams();
-    const navigate = useNavigate();
 
     // Extract query parameters
     const qidParam = searchParams.get('qid') || '';
@@ -38,10 +37,10 @@ const LandingPage = () => {
     }, [qidParam, langParam, subgraphParam]);
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { name, value, type, checked } = e.target;
+        const { name, value } = e.target;
         setFormData((prev) => ({
             ...prev,
-            [name]: type === 'checkbox' ? (checked ? value : '') : value,
+            [name]: value,
         }));
 
         if (name === 'qid' && error) {
@@ -51,24 +50,20 @@ const LandingPage = () => {
 
     const validateQid = (qid: string) => /^Q\d+$/.test(qid);
 
-    const handleNext = (e: React.FormEvent) => {
-        e.preventDefault();
-
+    const handleSubmit = (e: React.FormEvent) => {
         if (!formData.qid.trim()) {
+            e.preventDefault();
             setError('A QID is required to proceed.');
             return;
         }
 
         if (!validateQid(formData.qid)) {
+            e.preventDefault();
             setError(
                 'QID must start with "Q" followed by numbers (e.g., Q123).',
             );
             return;
         }
-
-        navigate(`/subtopics?qid=${encodeURIComponent(formData.qid)}`, {
-            state: { qid: formData.qid },
-        });
     };
 
     return (
@@ -76,7 +71,12 @@ const LandingPage = () => {
             <NavbarComponent />
             <main className="container mt-4">
                 <div className="row">
-                    <form id="langForm">
+                    <form
+                        id="langForm"
+                        method="GET"
+                        action="/subtopics"
+                        onSubmit={handleSubmit}
+                    >
                         <dl className="row">
                             <dt className="col-sm">
                                 <label htmlFor="qid">
@@ -129,15 +129,16 @@ const LandingPage = () => {
                                     'scientific_articles',
                                     'riksdagen_documents',
                                 ].map((option) => (
-                                    <label className='m-1' key={option}>
+                                    <label className="m-1 d-block" key={option}>
                                         <input
-                                            type="checkbox"
+                                            type="radio"
                                             name="subgraph"
                                             value={option}
                                             checked={
                                                 formData.subgraph === option
                                             }
                                             onChange={handleInputChange}
+                                            required
                                         />{' '}
                                         {option
                                             .replace('_', ' ')
@@ -152,7 +153,6 @@ const LandingPage = () => {
                         <button
                             type="submit"
                             className="btn btn-primary mt-3 w-100"
-                            onClick={handleNext}
                         >
                             Next
                         </button>
