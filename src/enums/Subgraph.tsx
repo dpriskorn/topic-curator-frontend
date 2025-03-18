@@ -1,6 +1,5 @@
 /**
- * These are useful hardcoded subgraphs, we should avoid this and let users define subgraphs themselves.
- * TODO: Avoid hardcoding.
+ * These are useful hardcoded subgraphs.
  */
 export enum Subgraph {
     SCIENTIFIC_JOURNALS = "scientific_journals",
