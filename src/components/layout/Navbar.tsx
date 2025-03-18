@@ -42,6 +42,9 @@ const NavbarComponent = () => {
                             >
                                 Feedback
                             </Nav.Link>
+                            <Nav.Link href="/co-maintainer">
+                                Become a Co-Maintainer
+                            </Nav.Link>
                         </Nav>
                     </Navbar.Collapse>
                 </Container>
