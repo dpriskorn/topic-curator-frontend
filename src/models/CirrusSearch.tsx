@@ -2,7 +2,7 @@ import { Item } from "./Item";
 import { Term } from "./Term";
 import { Subgraph } from "../enums/Subgraph";
 import { prefixConfig } from "../../public/config/prefix";
-import { backendConfig } from '../../public/config/backend';
+import { backendConfig } from '../../public/config/backends';
 import axios from "axios";
 
 /* This class is needed to construct the correct CirrusSearch strings used in WDQS SPARQL*/
