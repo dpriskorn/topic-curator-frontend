@@ -16,7 +16,10 @@
       "@components/*": ["src/components/*"],
       "@models/*": ["src/models/*"],
       "@enums/*": ["src/enums/*"]
-    }
+    },
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "strictPropertyInitialization": false
   },
   "files": [],
   "references": [
