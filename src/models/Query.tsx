@@ -1,6 +1,6 @@
 import { WIKIBASE_MAIN_SPARQL_ENDPOINT } from '../../public/config/backends';
 import { WIKIBASE_SCHOLARLY_SPARQL_ENDPOINT } from '../../public/config/backends';
-import apiClient from '../components/apiClient';
+import {restApiClient} from '../components/apiClients';
 import { SparqlResponse } from '../types/sparql';
 import { Item } from './Item';
 
@@ -36,7 +36,7 @@ export abstract class Query {
         console.debug(`Selected SPARQL endpoint: ${endpoint}`);
 
         try {
-            const response = await apiClient.get(endpoint, {
+            const response = await restApiClient.get(endpoint, {
                 params: { query: this.wdqsQueryString, format: 'json' },
             });
             console.debug('SPARQL response received:', response.data);

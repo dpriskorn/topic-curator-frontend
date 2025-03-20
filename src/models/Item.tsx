@@ -1,6 +1,6 @@
-import apiClient from "../components/apiClient";
-import { Term } from "./Term";
-import { TermSource } from "../enums/TermSource";
+import {restApiClient} from '../components/apiClients';
+import { Term } from './Term';
+import { TermSource } from '../enums/TermSource';
 
 class Item {
     public qid: string;
@@ -30,7 +30,7 @@ class Item {
     async fetchAliasTerms(): Promise<Term[]> {
         try {
             const aliasesUrl = `/entities/items/${this.qid}/aliases`;
-            const response = await apiClient.get(aliasesUrl);
+            const response = await restApiClient.get(aliasesUrl);
 
             if (response.status === 200) {
                 const aliasStrings: string[] = response.data[this.lang] || [];
@@ -50,7 +50,7 @@ class Item {
     async fetchDescription(): Promise<string> {
         try {
             const descriptionUrl = `/entities/items/${this.qid}/descriptions`;
-            const response = await apiClient.get(descriptionUrl);
+            const response = await restApiClient.get(descriptionUrl);
 
             if (response.status === 200) {
                 return (
@@ -70,12 +70,11 @@ class Item {
     async fetchLabel(): Promise<string> {
         try {
             const descriptionUrl = `/entities/items/${this.qid}/labels`;
-            const response = await apiClient.get(descriptionUrl);
+            const response = await restApiClient.get(descriptionUrl);
 
             if (response.status === 200) {
                 return (
-                    response.data[this.lang] ||
-                    'No label yet, please improve'
+                    response.data[this.lang] || 'No label yet, please improve'
                 );
             } else {
                 throw new Error(`Label fetch error: ${response.status}`);
