@@ -8,7 +8,7 @@ export class SubtopicQuery extends Query {
     items: SubtopicItem[] = [];
 
     constructor(item: Item) {
-        super(); // Call the parent class constructor if any
+        super(false); // Call the parent class constructor if any
         this.item = item;
     }
 

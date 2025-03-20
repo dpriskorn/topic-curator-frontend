@@ -64,11 +64,15 @@ const Results = () => {
                 console.debug('Total terms:', terms.length);
                 console.debug('Terms object:', termsObject);
 
-                const subgraphInstance = Object.values(Subgraph).includes(
-                    subgraph as Subgraph,
-                )
+                let use_scholarly_endpoint = false;
+                const subgraphInstance = Object.values(Subgraph).includes(subgraph as Subgraph)
                     ? (subgraph as Subgraph)
                     : Subgraph.SCIENTIFIC_ARTICLES;
+
+                if (subgraphInstance === Subgraph.SCIENTIFIC_ARTICLES) {
+                    use_scholarly_endpoint = true;
+                    console.debug('Results: use_scholarly_endpoint = true');
+                }
 
                 // 10k is max because of limitations in CirrusSearch
                 const limit = 10000;
@@ -84,9 +88,13 @@ const Results = () => {
                         term,
                         subgraphInstance,
                         prefix,
-                        affix
+                        affix,
                     );
-                    const query = new ResultQuery(limit, cirrussearch);
+                    const query = new ResultQuery(
+                        use_scholarly_endpoint,
+                        limit,
+                        cirrussearch,
+                    );
                     await query.runAndGetItems();
 
                     console.debug('query has been run: ', query.hasBeenRun);

@@ -11,7 +11,7 @@ describe('Query', () => {
     beforeEach(() => {
         term = new Term('example term', TermSource.ALIAS);
         cirrussearch = new CirrusSearch(new Item('Q123', 'en'), term);
-        query = new ResultQuery(10, cirrussearch);
+        query = new ResultQuery(false, 10, cirrussearch);
     });
 
     it('should initialize Query with given parameters', () => {

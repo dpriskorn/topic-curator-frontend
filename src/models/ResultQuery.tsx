@@ -10,8 +10,11 @@ export class ResultQuery extends Query {
     limit: number = 10000;
     cirrussearch: CirrusSearch;
 
-    constructor(limit: number, cirrussearch: CirrusSearch) {
-        super(); // Call the parent class constructor if any
+    constructor(
+        use_scholarly_endpoint: boolean, limit: number,
+        cirrussearch: CirrusSearch,
+    ) {
+        super(use_scholarly_endpoint); // Call the parent class constructor if any
         this.limit = limit;
         this.cirrussearch = cirrussearch;
     }
