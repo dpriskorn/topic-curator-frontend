@@ -1,6 +1,6 @@
 import axios from "axios";
 import USER_AGENT from "../../public/config/userAgent";
-import WIKIDATA_REST_API from "../../public/config/wikidataRestApi";
+import { WIKIDATA_REST_API } from "../../public/config/backends";
 
 const apiClient = axios.create({
   baseURL: WIKIDATA_REST_API,
