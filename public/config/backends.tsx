@@ -6,7 +6,10 @@ export const backendConfig = {
 };
 
 // We default to Wikidata endpoints
-export const WIKIBASE_ACTION_API = 'https://www.wikidata.org/w/api.php';
+export const WIKIBASE_ENTITY_DATA_API =
+    'https://www.wikidata.org/wiki/Special:EntityData/';
+
+// export const WIKIBASE_ACTION_API = 'https://www.wikidata.org/w/api.php';
 
 export const WIKIBASE_REST_API =
     'https://www.wikidata.org/w/rest.php/wikibase/v1';
