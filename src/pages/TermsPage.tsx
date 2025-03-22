@@ -116,7 +116,11 @@ const TermsPage = () => {
                             showError={showError}
                             setShowError={setShowError}
                         />
-                        <LexemeFetch />
+                        <LexemeFetch
+                            lang={lang}
+                            termsManagerRef={termsManagerRef}
+                            setTerms={setTerms}
+                        />
                     </form>
                 </div>
                 <Footer />
