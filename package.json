@@ -24,7 +24,7 @@
         "react-dom": "^19.0.0",
         "react-router-dom": "^7.7.1",
         "reflect-metadata": "^0.2.2",
-        "serve": "^14.2.4"
+        "serve": "^14.2.5"
     },
     "devDependencies": {
         "@eslint/js": "^9.19.0",
