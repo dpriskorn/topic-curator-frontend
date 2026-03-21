@@ -1,3 +1,5 @@
+***This repository was archived because it has at least one high severity warning and I'm no longer keeping it updated***
+
 # Wikidata Topic Curator
 This a webapp to help wikimedians curate groups of items on Wikidata with topics.
 
